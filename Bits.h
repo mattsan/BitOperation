@@ -61,6 +61,9 @@ template<typename T>
 class Bits
 {
 public:
+    typedef typename Traits<T>::signed_value_type   signed_value_type;
+    typedef typename Traits<T>::unsigned_value_type unsigned_value_type;
+
     virtual ~Bits() {}
     virtual int size() const = 0;
 
@@ -96,9 +99,7 @@ template<int SIZE, typename T = unsigned int>
 class SignedBits : public Bits<T>
 {
 public:
-    typedef typename Traits<T>::signed_value_type   signed_value_type;
-    typedef typename Traits<T>::unsigned_value_type unsigned_value_type;
-    typedef typename Traits<T>::signed_value_type   value_type;
+    typedef typename Bits<T>::signed_value_type   value_type;
 
     static const int Size = SIZE;
 
@@ -132,9 +133,7 @@ template<int SIZE, typename T = unsigned long>
 class UnsignedBits : public Bits<T>
 {
 public:
-    typedef typename Traits<T>::signed_value_type   signed_value_type;
-    typedef typename Traits<T>::unsigned_value_type unsigned_value_type;
-    typedef typename Traits<T>::unsigned_value_type value_type;
+    typedef typename Bits<T>::unsigned_value_type value_type;
 
     static const int Size = SIZE;
 
