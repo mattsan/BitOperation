@@ -66,41 +66,55 @@ public:
 
     virtual ~Bits() {}
     virtual int size() const = 0;
-    virtual unsigned_value_type asSequence() const = 0;
+    virtual void setSequence(unsigned_value_type value) = 0;
+    virtual unsigned_value_type getSequence() const = 0;
 
     struct Pack
     {
-        const Pack* const prev;
-        const Bits&       bits;
-        const int         size;
+        const Pack* prev;
+        Bits&       bits;
+        const int   size;
 
-        explicit Pack(const Bits& bits) : prev(0), bits(bits), size(bits.size())
+        explicit Pack(Bits& bits) : prev(0), bits(bits), size(bits.size())
         {
         }
 
-        Pack(const Pack& prev, const Bits& bits) : prev(&prev),
-                                                   bits(bits),
-                                                   size(prev.size + bits.size())
+        Pack(const Pack& prev, Bits& bits) : prev(&prev), bits(bits), size(prev.size + bits.size())
         {
         }
 
-        Pack operator , (const Bits& bits) const
+        Pack operator , (Bits& bits)
         {
             return Pack(*this, bits);
         }
 
-        unsigned_value_type asSequence() const
+        Pack& set(unsigned_value_type value)
         {
-            return prev ? (prev->asSequence() << bits.size() | bits.asSequence()) : bits.asSequence();
+            for(const Pack* pack = this; pack; pack = pack->prev)
+            {
+                pack->bits.setSequence(value);
+                value >>= pack->bits.size();
+            }
+            return *this;
+        }
+
+        unsigned_value_type getSequence() const
+        {
+            return prev ? (prev->getSequence() << bits.size() | bits.getSequence()) : bits.getSequence();
+        }
+
+        Pack& operator = (unsigned_value_type value)
+        {
+            return set(value);
         }
 
         operator unsigned_value_type () const
         {
-            return asSequence();
+            return getSequence();
         }
     };
 
-    Pack operator , (const Bits& bits) const
+    Pack operator , (Bits& bits)
     {
         return Pack(Pack(*this), bits);
     }
@@ -131,10 +145,25 @@ public:
         return value_;
     }
 
-    unsigned_value_type asSequence() const
+    void setSequence(unsigned_value_type value)
+    {
+        set(value);
+    }
+
+    unsigned_value_type getSequence() const
     {
         return static_cast<unsigned_value_type>(value_) & ((1u << Size) - 1);
     };
+
+    SignedBits& operator = (value_type n)
+    {
+        return set(n);
+    }
+
+    operator value_type () const
+    {
+        return get();
+    }
 
 private:
     value_type trim(value_type n)
@@ -172,10 +201,25 @@ public:
         return value_;
     }
 
-    unsigned_value_type asSequence() const
+    void setSequence(unsigned_value_type value)
+    {
+        set(value);
+    }
+
+    unsigned_value_type getSequence() const
     {
         return static_cast<unsigned_value_type>(value_) & ((1u << Size) - 1);
     };
+
+    UnsignedBits& operator = (value_type n)
+    {
+        return set(n);
+    }
+
+    operator value_type () const
+    {
+        return get();
+    }
 
 private:
     value_type trim(value_type n)
