@@ -2,6 +2,8 @@
 
 #include "Bits.h"
 
+using namespace emattsan;
+
 TEST(Bits, SizeTest)
 {
     SignedBits<1> sbits1;

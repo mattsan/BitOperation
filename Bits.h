@@ -1,6 +1,9 @@
 #ifndef BITS_H
 #define BITS_H
 
+namespace emattsan
+{
+
 template<typename T> struct Traits;
 
 template<> struct Traits<char>
@@ -75,18 +78,11 @@ public:
         Bits&       bits;
         const int   size;
 
-        explicit Pack(Bits& bits) : prev(0), bits(bits), size(bits.size())
-        {
-        }
+        explicit Pack(Bits& bits) : prev(0), bits(bits), size(bits.size()) {}
 
-        Pack(const Pack& prev, Bits& bits) : prev(&prev), bits(bits), size(prev.size + bits.size())
-        {
-        }
+        Pack(const Pack& prev, Bits& bits) : prev(&prev), bits(bits), size(prev.size + bits.size()) {}
 
-        Pack operator , (Bits& bits)
-        {
-            return Pack(*this, bits);
-        }
+        Pack operator , (Bits& bits) { return Pack(*this, bits); }
 
         Pack& set(unsigned_value_type value)
         {
@@ -103,21 +99,12 @@ public:
             return prev ? (prev->getSequence() << bits.size() | bits.getSequence()) : bits.getSequence();
         }
 
-        Pack& operator = (unsigned_value_type value)
-        {
-            return set(value);
-        }
+        Pack& operator = (unsigned_value_type value) { return set(value); }
 
-        operator unsigned_value_type () const
-        {
-            return getSequence();
-        }
+        operator unsigned_value_type () const { return getSequence(); }
     };
 
-    Pack operator , (Bits& bits)
-    {
-        return Pack(Pack(*this), bits);
-    }
+    Pack operator , (Bits& bits) { return Pack(Pack(*this), bits); }
 };
 
 template<int SIZE, typename T = unsigned int>
@@ -140,30 +127,18 @@ public:
         return *this;
     }
 
-    value_type get() const
-    {
-        return value_;
-    }
+    value_type get() const { return value_; }
 
-    void setSequence(unsigned_value_type value)
-    {
-        set(value);
-    }
+    void setSequence(unsigned_value_type value) { set(value); }
 
     unsigned_value_type getSequence() const
     {
         return static_cast<unsigned_value_type>(value_) & ((1u << Size) - 1);
     };
 
-    SignedBits& operator = (value_type n)
-    {
-        return set(n);
-    }
+    SignedBits& operator = (value_type n) { return set(n); }
 
-    operator value_type () const
-    {
-        return get();
-    }
+    operator value_type () const { return get(); }
 
 private:
     value_type trim(value_type n)
@@ -196,30 +171,18 @@ public:
         return *this;
     }
 
-    value_type get() const
-    {
-        return value_;
-    }
+    value_type get() const { return value_; }
 
-    void setSequence(unsigned_value_type value)
-    {
-        set(value);
-    }
+    void setSequence(unsigned_value_type value) { set(value); }
 
     unsigned_value_type getSequence() const
     {
         return static_cast<unsigned_value_type>(value_) & ((1u << Size) - 1);
     };
 
-    UnsignedBits& operator = (value_type n)
-    {
-        return set(n);
-    }
+    UnsignedBits& operator = (value_type n) { return set(n); }
 
-    operator value_type () const
-    {
-        return get();
-    }
+    operator value_type () const { return get(); }
 
 private:
     value_type trim(value_type n)
@@ -229,5 +192,7 @@ private:
 
     value_type value_;
 };
+
+} // namespace emattsan
 
 #endif//BITS_H
