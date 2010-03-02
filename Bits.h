@@ -104,7 +104,28 @@ public:
         operator unsigned_value_type () const { return getSequence(); }
     };
 
+    struct ConstPack
+    {
+        const ConstPack* prev;
+        const Bits&      bits;
+        const int        size;
+
+        explicit ConstPack(const Bits& bits) : prev(0), bits(bits), size(bits.size()) {}
+
+        ConstPack(const ConstPack& prev, const Bits& bits) : prev(&prev), bits(bits), size(prev.size + bits.size()) {}
+
+        ConstPack operator , (const Bits& bits) { return ConstPack(*this, bits); }
+
+        unsigned_value_type getSequence() const
+        {
+            return prev ? (prev->getSequence() << bits.size() | bits.getSequence()) : bits.getSequence();
+        }
+
+        operator unsigned_value_type () const { return getSequence(); }
+    };
+
     Pack operator , (Bits& bits) { return Pack(Pack(*this), bits); }
+    ConstPack operator , (const Bits& bits) const { return ConstPack(ConstPack(*this), bits); }
 };
 
 template<int SIZE, typename T = unsigned int>

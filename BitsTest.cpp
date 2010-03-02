@@ -253,6 +253,16 @@ TEST(PackTest, SetTest2)
     ASSERT_EQ(3u, static_cast<unsigned int>(ubits3));
 }
 
+TEST(PackTest, ConstGetTest)
+{
+    const SignedBits<4> highnibble(5);
+    const SignedBits<4> lownibble(10);
+
+    int n = (highnibble, lownibble);
+
+    ASSERT_EQ(0x5a, n);
+}
+
 int main(int argc, char* argv[])
 {
     ::testing::InitGoogleTest(&argc, argv);
