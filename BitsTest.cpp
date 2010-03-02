@@ -131,6 +131,12 @@ TEST(PackTest, SizeTest)
     SignedBits<3> sbits3;
 
     ASSERT_EQ(7, (sbits4, sbits3).size);
+
+    sbits4.set(1);
+    sbits3.set(2);
+
+    ASSERT_EQ(10, static_cast<int>(sbits4, sbits3));
+    ASSERT_EQ(33, static_cast<int>(sbits3, sbits4));
 }
 
 int main(int argc, char* argv[])

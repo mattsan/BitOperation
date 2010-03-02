@@ -66,6 +66,7 @@ public:
 
     virtual ~Bits() {}
     virtual int size() const = 0;
+    virtual unsigned_value_type asSequence() const = 0;
 
     struct Pack
     {
@@ -87,6 +88,16 @@ public:
         {
             return Pack(*this, bits);
         }
+
+        unsigned_value_type asSequence() const
+        {
+            return prev ? (prev->asSequence() << bits.size() | bits.asSequence()) : bits.asSequence();
+        }
+
+        operator unsigned_value_type () const
+        {
+            return asSequence();
+        }
     };
 
     Pack operator , (const Bits& bits) const
@@ -99,6 +110,8 @@ template<int SIZE, typename T = unsigned int>
 class SignedBits : public Bits<T>
 {
 public:
+    typedef typename Bits<T>::signed_value_type   signed_value_type;
+    typedef typename Bits<T>::unsigned_value_type unsigned_value_type;
     typedef typename Bits<T>::signed_value_type   value_type;
 
     static const int Size = SIZE;
@@ -118,6 +131,11 @@ public:
         return value_;
     }
 
+    unsigned_value_type asSequence() const
+    {
+        return static_cast<unsigned_value_type>(value_) & ((1u << Size) - 1);
+    };
+
 private:
     value_type trim(value_type n)
     {
@@ -133,6 +151,8 @@ template<int SIZE, typename T = unsigned long>
 class UnsignedBits : public Bits<T>
 {
 public:
+    typedef typename Bits<T>::signed_value_type   signed_value_type;
+    typedef typename Bits<T>::unsigned_value_type unsigned_value_type;
     typedef typename Bits<T>::unsigned_value_type value_type;
 
     static const int Size = SIZE;
@@ -150,7 +170,12 @@ public:
     value_type get() const
     {
         return value_;
-    } 
+    }
+
+    unsigned_value_type asSequence() const
+    {
+        return static_cast<unsigned_value_type>(value_) & ((1u << Size) - 1);
+    };
 
 private:
     value_type trim(value_type n)
