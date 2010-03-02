@@ -1,6 +1,63 @@
 #ifndef BITS_H
 #define BITS_H
 
+template<typename T> struct Traits;
+
+template<> struct Traits<char>
+{
+    typedef signed char   signed_value_type;
+    typedef unsigned char unsigned_value_type;
+};
+
+template<> struct Traits<signed char>
+{
+    typedef signed char   signed_value_type;
+    typedef unsigned char unsigned_value_type;
+};
+
+template<> struct Traits<unsigned char>
+{
+    typedef signed char   signed_value_type;
+    typedef unsigned char unsigned_value_type;
+};
+
+template<> struct Traits<signed short>
+{
+    typedef signed short   signed_value_type;
+    typedef unsigned short unsigned_value_type;
+};
+
+template<> struct Traits<unsigned short>
+{
+    typedef signed short   signed_value_type;
+    typedef unsigned short unsigned_value_type;
+};
+
+template<> struct Traits<signed int>
+{
+    typedef signed int   signed_value_type;
+    typedef unsigned int unsigned_value_type;
+};
+
+template<> struct Traits<unsigned int>
+{
+    typedef signed int   signed_value_type;
+    typedef unsigned int unsigned_value_type;
+};
+
+template<> struct Traits<signed long>
+{
+    typedef signed long   signed_value_type;
+    typedef unsigned long unsigned_value_type;
+};
+
+template<> struct Traits<unsigned long>
+{
+    typedef signed long   signed_value_type;
+    typedef unsigned long unsigned_value_type;
+};
+
+template<typename T>
 class Bits
 {
 public:
@@ -35,11 +92,13 @@ public:
     }
 };
 
-template<int SIZE>
-class SignedBits : public Bits
+template<int SIZE, typename T = unsigned int>
+class SignedBits : public Bits<T>
 {
 public:
-    typedef int value_type;
+    typedef typename Traits<T>::signed_value_type   signed_value_type;
+    typedef typename Traits<T>::unsigned_value_type unsigned_value_type;
+    typedef typename Traits<T>::signed_value_type   value_type;
 
     static const int Size = SIZE;
 
@@ -69,11 +128,13 @@ private:
     value_type value_;
 };
 
-template<int SIZE>
-class UnsignedBits : public Bits
+template<int SIZE, typename T = unsigned long>
+class UnsignedBits : public Bits<T>
 {
 public:
-    typedef unsigned int value_type;
+    typedef typename Traits<T>::signed_value_type   signed_value_type;
+    typedef typename Traits<T>::unsigned_value_type unsigned_value_type;
+    typedef typename Traits<T>::unsigned_value_type value_type;
 
     static const int Size = SIZE;
 
