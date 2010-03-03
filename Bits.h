@@ -4,6 +4,9 @@
 namespace emattsan
 {
 
+namespace detail
+{
+
 template<typename T> struct Traits;
 
 template<> struct Traits<char>
@@ -60,17 +63,14 @@ template<> struct Traits<unsigned long>
     typedef unsigned long unsigned_value_type;
 };
 
+} // namespace detail
+
 template<typename T>
 class Bits
 {
 public:
-    typedef typename Traits<T>::signed_value_type   signed_value_type;
-    typedef typename Traits<T>::unsigned_value_type unsigned_value_type;
-
-    virtual ~Bits() {}
-    virtual int size() const = 0;
-    virtual void setSequence(unsigned_value_type value) = 0;
-    virtual unsigned_value_type getSequence() const = 0;
+    typedef typename detail::Traits<T>::signed_value_type   signed_value_type;
+    typedef typename detail::Traits<T>::unsigned_value_type unsigned_value_type;
 
     template<class LHS, class RHS>
     class Pack
@@ -78,7 +78,7 @@ public:
     public:
         typedef Pack<LHS, RHS> this_type;
 
-        typedef Traits<long>::unsigned_value_type unsigned_value_type;
+        typedef detail::Traits<long>::unsigned_value_type unsigned_value_type;
 
         Pack(LHS& lhs, RHS& rhs) : lhs_(lhs), rhs_(rhs), size_(lhs.size() + rhs.size()) {}
 
@@ -108,6 +108,13 @@ public:
         RHS&      rhs_;
         const int size_;
     };
+
+    // member functions of Bits
+
+    virtual ~Bits() {}
+    virtual int size() const = 0;
+    virtual void setSequence(unsigned_value_type value) = 0;
+    virtual unsigned_value_type getSequence() const = 0;
 
     template<class RHS>
     Pack<Bits, RHS> operator , (RHS& rhs) { return Pack<Bits, RHS>(*this, rhs); }
