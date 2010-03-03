@@ -263,7 +263,7 @@ TEST(PackTest, ConstGetTest)
     ASSERT_EQ(0x5a, n);
 }
 
-TEST(PackTest, MixedGetTest)
+TEST(PackTest, MixedGetTest1)
 {
     SignedBits<2>       bits1(1);
     SignedBits<2>       bits2(1);
@@ -282,6 +282,43 @@ TEST(PackTest, MixedGetTest)
     n     = (bits1, (bits2, bits3));
 
     ASSERT_EQ(0x29, n);
+}
+
+TEST(PackTest, MixedGetTest2)
+{
+    SignedBits<4>   sbits1(1);
+    SignedBits<4>   sbits2(1);
+    UnsignedBits<4> ubits1(1);
+    UnsignedBits<4> ubits2(1);
+
+    ASSERT_EQ(0x1111, static_cast<int>(sbits1, sbits2, ubits1, ubits2));
+}
+
+TEST(PackTest, MixedGetTest3)
+{
+    SignedBits<2, char> sbits1(1);
+    SignedBits<6, int>  sbits2(1);
+
+    ASSERT_EQ(0x41, static_cast<int>(sbits1, sbits2));
+
+    SignedBits<12, short> sbits3(1);
+
+    ASSERT_EQ(0x41001, static_cast<int>(sbits1, sbits2, sbits3));
+}
+
+TEST(PackTest, MixedSetTest)
+{
+    SignedBits<4>   sbits1;
+    SignedBits<4>   sbits2;
+    UnsignedBits<4> ubits1;
+    UnsignedBits<4> ubits2;
+
+    (sbits1, sbits2, ubits1, ubits2) = 0x89ab;
+
+    ASSERT_EQ(-8, static_cast<int>(sbits1));
+    ASSERT_EQ(-7, static_cast<int>(sbits2));
+    ASSERT_EQ(10u, static_cast<unsigned int>(ubits1));
+    ASSERT_EQ(11u, static_cast<unsigned int>(ubits2));
 }
 
 int main(int argc, char* argv[])

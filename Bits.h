@@ -78,6 +78,8 @@ public:
     public:
         typedef Pack<LHS, RHS> this_type;
 
+        typedef Traits<long>::unsigned_value_type unsigned_value_type;
+
         Pack(LHS& lhs, RHS& rhs) : lhs_(lhs), rhs_(rhs), size_(lhs.size() + rhs.size()) {}
 
         int size() const { return size_; }
