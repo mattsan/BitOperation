@@ -186,7 +186,7 @@ TEST(PackTest, SizeTest)
     SignedBits<4> sbits4;
     SignedBits<3> sbits3;
 
-    ASSERT_EQ(7, (sbits4, sbits3).size);
+    ASSERT_EQ(7, (sbits4, sbits3).size());
 }
 
 TEST(PackTest, GetTest)
@@ -261,6 +261,17 @@ TEST(PackTest, ConstGetTest)
     int n = (highnibble, lownibble);
 
     ASSERT_EQ(0x5a, n);
+}
+
+TEST(PackTest, MixedGetTest)
+{
+    SignedBits<2>       bits1(1);
+    SignedBits<2>       bits2(1);
+    const SignedBits<2> bits3(1);
+
+    int n = (bits1, bits2, bits3);
+
+    ASSERT_EQ(0x15, n);
 }
 
 int main(int argc, char* argv[])
