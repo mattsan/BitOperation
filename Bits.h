@@ -65,49 +65,15 @@ template<> struct Traits<unsigned long>
 
 } // namespace detail
 
+template<class LHS, class RHS> class Pack;
+template<class LHS, class RHS> class ConstPack;
+
 template<typename T>
 class Bits
 {
 public:
     typedef typename detail::Traits<T>::signed_value_type   signed_value_type;
     typedef typename detail::Traits<T>::unsigned_value_type unsigned_value_type;
-
-    template<class LHS, class RHS>
-    class Pack
-    {
-    public:
-        typedef Pack<LHS, RHS> this_type;
-
-        typedef detail::Traits<long>::unsigned_value_type unsigned_value_type;
-
-        Pack(LHS& lhs, RHS& rhs) : lhs_(lhs), rhs_(rhs), size_(lhs.size() + rhs.size()) {}
-
-        int size() const { return size_; }
-
-        Pack& setSequence(unsigned_value_type value)
-        {
-            rhs_.setSequence(value);
-            lhs_.setSequence(value >> rhs_.size());
-            return *this;
-        }
-
-        unsigned_value_type getSequence() const
-        {
-            return (lhs_.getSequence() << rhs_.size()) | rhs_.getSequence();
-        }
-
-        template<class R>
-        Pack<this_type, R> operator , (R& rhs) { return Pack<this_type, R>(*this, rhs); }
-
-        Pack& operator = (unsigned_value_type value) { return setSequence(value); }
-
-        operator unsigned_value_type () const { return getSequence(); }
-
-    private:
-        LHS&      lhs_;
-        RHS&      rhs_;
-        const int size_;
-    };
 
     // member functions of Bits
 
@@ -117,10 +83,10 @@ public:
     virtual unsigned_value_type getSequence() const = 0;
 
     template<class RHS>
-    Pack<Bits, RHS> operator , (RHS& rhs) { return Pack<Bits, RHS>(*this, rhs); }
+    Pack<T, RHS> operator , (Bits<RHS>& rhs) { return Pack<T, RHS>(*this, rhs); }
 
     template<class RHS>
-    const Pack<const Bits, const RHS> operator , (const RHS& rhs) const { return Pack<const Bits, const RHS>(*this, rhs); }
+    ConstPack<T, RHS> operator , (const Bits<RHS>& rhs) const { return ConstPack<T, RHS>(*this, rhs); }
 };
 
 template<int SIZE, typename T = unsigned int>
@@ -207,6 +173,75 @@ private:
     }
 
     value_type value_;
+};
+
+template<class LHS, class RHS>
+class Pack : public Bits<long>
+{
+public:
+    typedef Pack<LHS, RHS> this_type;
+
+    typedef Bits<long>::unsigned_value_type unsigned_value_type;
+
+    Pack(Bits<LHS>& lhs, Bits<RHS>& rhs) : lhs_(lhs), rhs_(rhs), size_(lhs.size() + rhs.size()) {}
+
+    int size() const { return size_; }
+
+    void setSequence(unsigned_value_type value)
+    {
+        rhs_.setSequence(value);
+        lhs_.setSequence(value >> rhs_.size());
+    }
+
+    unsigned_value_type getSequence() const
+    {
+        return (lhs_.getSequence() << rhs_.size()) | rhs_.getSequence();
+    }
+
+    template<class R>
+    Pack<long, R> operator , (Bits<R>& rhs) { return Pack<long, R>(*this, rhs); }
+
+    template<class R>
+    ConstPack<long, R> operator , (const Bits<R>& rhs) { return ConstPack<long, R>(*this, rhs); }
+
+    Pack& operator = (unsigned_value_type value) { setSequence(value); return *this; }
+
+    operator unsigned_value_type () const { return getSequence(); }
+
+private:
+    Bits<LHS>& lhs_;
+    Bits<RHS>& rhs_;
+    const int  size_;
+};
+
+template<class LHS, class RHS>
+class ConstPack : public Bits<long>
+{
+public:
+    typedef ConstPack<LHS, RHS> this_type;
+
+    typedef Bits<long>::unsigned_value_type unsigned_value_type;
+
+    ConstPack(const Bits<LHS>& lhs, const Bits<RHS>& rhs) : lhs_(lhs), rhs_(rhs), size_(lhs.size() + rhs.size()) {}
+
+    int size() const { return size_; }
+
+    void setSequence(unsigned_value_type) { /* nop: This function is not used */ }
+
+    unsigned_value_type getSequence() const
+    {
+        return (lhs_.getSequence() << rhs_.size()) | rhs_.getSequence();
+    }
+
+    template<class R>
+    ConstPack<long, R> operator , (Bits<R>& rhs) { return ConstPack<long, R>(*this, rhs); }
+
+    operator unsigned_value_type () const { return getSequence(); }
+
+private:
+    const Bits<LHS>& lhs_;
+    const Bits<RHS>& rhs_;
+    const int        size_;
 };
 
 } // namespace emattsan

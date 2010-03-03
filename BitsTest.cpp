@@ -1,3 +1,6 @@
+// compile: g++ -Wall -o BitsTest BitsTest.cpp -lgtest
+// need Google Test (see: http://code.google.com/p/googletest/ )
+
 #include <gtest/gtest.h>
 
 #include "Bits.h"
