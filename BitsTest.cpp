@@ -272,6 +272,16 @@ TEST(PackTest, MixedGetTest)
     int n = (bits1, bits2, bits3);
 
     ASSERT_EQ(0x15, n);
+
+    bits1 = 2;
+    bits2 = 2;
+    n     = (bits1, bits2, bits3);
+
+    ASSERT_EQ(0x29, n);
+
+    n     = (bits1, (bits2, bits3));
+
+    ASSERT_EQ(0x29, n);
 }
 
 int main(int argc, char* argv[])

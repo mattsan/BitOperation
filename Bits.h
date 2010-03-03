@@ -107,37 +107,11 @@ public:
         const int size_;
     };
 
-    template<class LHS, class RHS>
-    class ConstPack
-    {
-    public:
-        typedef ConstPack<LHS, RHS> this_type;
-
-        ConstPack(const LHS& lhs, const RHS& rhs) : lhs_(lhs), rhs_(rhs), size_(lhs.size() + rhs.size()) {}
-
-        int size() const { return size_; }
-
-        unsigned_value_type getSequence() const
-        {
-            return (lhs_.getSequence() << rhs_.size()) | rhs_.getSequence();
-        }
-
-        template<class R>
-        ConstPack<this_type, R> operator , (const R& rhs) { return ConstPack<this_type, R>(*this, rhs); }
-
-        operator unsigned_value_type () const { return getSequence(); }
-
-    private:
-        const LHS& lhs_;
-        const RHS& rhs_;
-        const int  size_;
-    };
-
     template<class RHS>
     Pack<Bits, RHS> operator , (RHS& rhs) { return Pack<Bits, RHS>(*this, rhs); }
 
     template<class RHS>
-    const ConstPack<Bits, RHS> operator , (const RHS& rhs) const { return ConstPack<Bits, RHS>(*this, rhs); }
+    const Pack<const Bits, const RHS> operator , (const RHS& rhs) const { return Pack<const Bits, const RHS>(*this, rhs); }
 };
 
 template<int SIZE, typename T = unsigned int>
