@@ -1,7 +1,10 @@
-#ifndef BITS_H
-#define BITS_H
+#ifndef EMATTSAN_BITS_H
+#define EMATTSAN_BITS_H
 
 namespace emattsan
+{
+
+namespace bits
 {
 
 namespace detail
@@ -94,7 +97,7 @@ public:
 };
 
 template<int SIZE, typename T = unsigned int>
-class SignedBits : public Bits<T>
+class Signed : public Bits<T>
 {
 public:
     typedef typename Bits<T>::signed_value_type   signed_value_type;
@@ -103,11 +106,11 @@ public:
 
     static const int Size = SIZE;
 
-    explicit SignedBits(value_type n = 0) : value_(trim(n)) {}
+    explicit Signed(value_type n = 0) : value_(trim(n)) {}
 
     int size() const { return Size; }
 
-    SignedBits& set(value_type n)
+    Signed& set(value_type n)
     {
         value_ = trim(n);
         return *this;
@@ -122,7 +125,7 @@ public:
         return static_cast<unsigned_value_type>(value_) & ((1u << Size) - 1);
     };
 
-    SignedBits& operator = (value_type n) { return set(n); }
+    Signed& operator = (value_type n) { return set(n); }
 
     operator value_type () const { return get(); }
 
@@ -138,7 +141,7 @@ private:
 };
 
 template<int SIZE, typename T = unsigned long>
-class UnsignedBits : public Bits<T>
+class Unsigned : public Bits<T>
 {
 public:
     typedef typename Bits<T>::signed_value_type   signed_value_type;
@@ -147,11 +150,11 @@ public:
 
     static const int Size = SIZE;
 
-    explicit UnsignedBits(value_type n = 0) : value_(trim(n)) {}
+    explicit Unsigned(value_type n = 0) : value_(trim(n)) {}
 
     int size() const { return Size; }
 
-    UnsignedBits& set(value_type n)
+    Unsigned& set(value_type n)
     {
         value_ = trim(n);
         return *this;
@@ -166,7 +169,7 @@ public:
         return static_cast<unsigned_value_type>(value_) & ((1u << Size) - 1);
     };
 
-    UnsignedBits& operator = (value_type n) { return set(n); }
+    Unsigned& operator = (value_type n) { return set(n); }
 
     operator value_type () const { return get(); }
 
@@ -309,6 +312,8 @@ private:
 template<int N>
 inline int reserve() { return N; }
 
+} // namespace bits
+
 } // namespace emattsan
 
-#endif//BITS_H
+#endif//EMATTSAN_BITS_H
