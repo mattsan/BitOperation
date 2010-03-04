@@ -66,49 +66,63 @@ template<> struct Traits<unsigned long>
     typedef unsigned long unsigned_value_type;
 };
 
+template<int N>
+struct Width
+{
+    template<bool LE_CHAR_SIZE, bool LE_SHORT_SIZE, bool LE_INT_SIZE, bool LE_LONG_SIZE> struct _
+    {
+        typedef Traits<long>::unsigned_value_type value_type;
+    };
+
+    template<bool LE_SHORT_SIZE, bool LE_INT_SIZE, bool LE_LONG_SIZE> struct _<true, LE_SHORT_SIZE, LE_INT_SIZE, LE_LONG_SIZE>
+    {
+        typedef Traits<char>::unsigned_value_type value_type;
+    };
+
+    template<bool LE_INT_SIZE, bool LE_LONG_SIZE> struct _<false, true, LE_INT_SIZE, LE_LONG_SIZE>
+    {
+        typedef Traits<short>::unsigned_value_type value_type;
+    };
+
+    template<bool LE_LONG_SIZE> struct _<false, false, true, LE_LONG_SIZE>
+    {
+        typedef Traits<int>::unsigned_value_type value_type;
+    };
+
+    static const int BitsPerChar = 8;
+
+    typedef typename _< (N <= BitsPerChar),
+                        (N <= (sizeof(short) * BitsPerChar)),
+                        (N <= (sizeof(int) * BitsPerChar)),
+                        (N <= (sizeof(long) * BitsPerChar))
+                      >::value_type value_type;
+};
+
+template<int N> struct Reserved;
+
 } // namespace detail
 
 template<class LHS, class RHS> class Pack;
 template<class LHS, class RHS> class ConstPack;
 
-template<typename T>
-class Bits
+template<int SIZE, typename T = unsigned int>
+class Signed
 {
 public:
     typedef typename detail::Traits<T>::signed_value_type   signed_value_type;
     typedef typename detail::Traits<T>::unsigned_value_type unsigned_value_type;
-
-    // member functions of Bits
-
-    virtual ~Bits() {}
-    virtual int size() const = 0;
-    virtual void setSequence(unsigned_value_type value) = 0;
-    virtual unsigned_value_type getSequence() const = 0;
-
-    template<class RHS>
-    Pack<T, RHS> operator , (Bits<RHS>& rhs) { return Pack<T, RHS>(*this, rhs); }
-
-    Pack<T, int(*)()> operator , (int (*rhs)()) { return Pack<T, int(*)()>(*this, rhs); }
-
-    template<class RHS>
-    ConstPack<T, RHS> operator , (const Bits<RHS>& rhs) const { return ConstPack<T, RHS>(*this, rhs); }
-
-    ConstPack<T, int(*)()> operator , (int(*rhs)()) const { return ConstPack<T, int(*)()>(*this, rhs); }
-};
-
-template<int SIZE, typename T = unsigned int>
-class Signed : public Bits<T>
-{
-public:
-    typedef typename Bits<T>::signed_value_type   signed_value_type;
-    typedef typename Bits<T>::unsigned_value_type unsigned_value_type;
-    typedef typename Bits<T>::signed_value_type   value_type;
+    typedef typename detail::Traits<T>::signed_value_type   value_type;
 
     static const int Size = SIZE;
 
-    explicit Signed(value_type n = 0) : value_(trim(n)) {}
+    explicit Signed(value_type n = 0) : value_(trim(n))
+    {
+    }
 
-    int size() const { return Size; }
+    static int size()
+    {
+        return Size;
+    }
 
     Signed& set(value_type n)
     {
@@ -116,18 +130,30 @@ public:
         return *this;
     }
 
-    value_type get() const { return value_; }
+    value_type get() const
+    {
+        return value_;
+    }
 
-    void setSequence(unsigned_value_type value) { set(value); }
+    Signed& operator = (value_type n)
+    {
+        return set(n);
+    }
+
+    operator value_type () const
+    {
+        return get();
+    }
+
+    void setSequence(unsigned_value_type value)
+    {
+        set(value);
+    }
 
     unsigned_value_type getSequence() const
     {
         return static_cast<unsigned_value_type>(value_) & ((1u << Size) - 1);
     };
-
-    Signed& operator = (value_type n) { return set(n); }
-
-    operator value_type () const { return get(); }
 
 private:
     value_type trim(value_type n)
@@ -141,18 +167,23 @@ private:
 };
 
 template<int SIZE, typename T = unsigned long>
-class Unsigned : public Bits<T>
+class Unsigned
 {
 public:
-    typedef typename Bits<T>::signed_value_type   signed_value_type;
-    typedef typename Bits<T>::unsigned_value_type unsigned_value_type;
-    typedef typename Bits<T>::unsigned_value_type value_type;
+    typedef typename detail::Traits<T>::signed_value_type   signed_value_type;
+    typedef typename detail::Traits<T>::unsigned_value_type unsigned_value_type;
+    typedef typename detail::Traits<T>::unsigned_value_type value_type;
 
     static const int Size = SIZE;
 
-    explicit Unsigned(value_type n = 0) : value_(trim(n)) {}
+    explicit Unsigned(value_type n = 0) : value_(trim(n))
+    {
+    }
 
-    int size() const { return Size; }
+    static int size()
+    {
+        return Size;
+    }
 
     Unsigned& set(value_type n)
     {
@@ -160,18 +191,30 @@ public:
         return *this;
     }
 
-    value_type get() const { return value_; }
+    value_type get() const
+    {
+        return value_;
+    }
 
-    void setSequence(unsigned_value_type value) { set(value); }
+    Unsigned& operator = (value_type n)
+    {
+        return set(n);
+    }
+
+    operator value_type () const
+    {
+        return get();
+    }
+
+    void setSequence(unsigned_value_type value)
+    {
+        set(value);
+    }
 
     unsigned_value_type getSequence() const
     {
         return static_cast<unsigned_value_type>(value_) & ((1u << Size) - 1);
     };
-
-    Unsigned& operator = (value_type n) { return set(n); }
-
-    operator value_type () const { return get(); }
 
 private:
     value_type trim(value_type n)
@@ -183,134 +226,218 @@ private:
 };
 
 template<class LHS, class RHS>
-class Pack : public Bits<long>
+class Pack
 {
 public:
-    typedef Bits<long>::unsigned_value_type unsigned_value_type;
+    static const int Size = LHS::Size + RHS::Size;
 
-    Pack(Bits<LHS>& lhs, Bits<RHS>& rhs) : lhs_(lhs), rhs_(rhs), size_(lhs.size() + rhs.size()) {}
+    typedef typename detail::Width<Size>::value_type value_type;
 
-    int size() const { return size_; }
+    Pack(LHS& lhs, RHS& rhs) : lhs_(lhs), rhs_(rhs)
+    {
+    }
 
-    void setSequence(unsigned_value_type value)
+    static int size()
+    {
+        return Size;
+    }
+
+    void setSequence(value_type value)
     {
         rhs_.setSequence(value);
-        lhs_.setSequence(value >> rhs_.size());
+        lhs_.setSequence(value >> RHS::Size);
     }
 
-    unsigned_value_type getSequence() const
+    value_type getSequence() const
     {
-        return (lhs_.getSequence() << rhs_.size()) | rhs_.getSequence();
+        return (lhs_.getSequence() << RHS::Size) | rhs_.getSequence();
+    }
+
+    Pack& operator = (value_type value)
+    {
+        setSequence(value);
+        return *this;
+    }
+
+    operator value_type () const
+    {
+        return getSequence();
     }
 
     template<class R>
-    Pack<long, R> operator , (Bits<R>& rhs) { return Pack<long, R>(*this, rhs); }
+    Pack<Pack, R> operator , (R& rhs)
+    {
+        return Pack<Pack, R>(*this, rhs);
+    }
 
     template<class R>
-    ConstPack<long, R> operator , (const Bits<R>& rhs) const { return ConstPack<long, R>(*this, rhs); }
-
-    Pack& operator = (unsigned_value_type value) { setSequence(value); return *this; }
-
-    operator unsigned_value_type () const { return getSequence(); }
+    ConstPack<Pack, R> operator , (const R& rhs) const
+    {
+        return ConstPack<Pack, R>(*this, rhs);
+    }
 
 private:
-    Bits<LHS>& lhs_;
-    Bits<RHS>& rhs_;
-    const int  size_;
+    LHS& lhs_;
+    RHS& rhs_;
 };
 
-template<class LHS>
-class Pack<LHS, int(*)()> : public Bits<long>
+template<class LHS, int N>
+class Pack<LHS, detail::Reserved<N>*(*)()>
 {
 public:
-    typedef Bits<long>::unsigned_value_type unsigned_value_type;
+    static const int Size = LHS::Size + N;
 
-    Pack(Bits<LHS>& lhs, int (*rhs)()) : lhs_(lhs), rhs_(rhs) {}
+    typedef typename detail::Width<Size>::value_type value_type;
 
-    int size() const { return lhs_.size() + rhs_(); }
-
-    void setSequence(unsigned_value_type value)
+    Pack(LHS& lhs, detail::Reserved<N>*(*)()) : lhs_(lhs)
     {
-        lhs_.setSequence(value >> rhs_());
     }
 
-    unsigned_value_type getSequence() const
+    static int size()
     {
-        return lhs_.getSequence() << rhs_();
+        return Size;
+    }
+
+    void setSequence(value_type value)
+    {
+        lhs_.setSequence(value >> N);
+    }
+
+    value_type getSequence() const
+    {
+        return lhs_.getSequence() << N;
+    }
+
+    Pack& operator = (value_type value)
+    {
+        setSequence(value); return *this;
+    }
+
+    operator value_type () const
+    {
+        return getSequence();
     }
 
     template<class R>
-    Pack<long, R> operator , (Bits<R>& rhs) { return Pack<long, R>(*this, rhs); }
+    Pack<Pack, R> operator , (R& rhs)
+    {
+        return Pack<Pack, R>(*this, rhs);
+    }
 
     template<class R>
-    ConstPack<long, R> operator , (const Bits<R>& rhs) const { return ConstPack<long, R>(*this, rhs); }
-
-    Pack& operator = (unsigned_value_type value) { setSequence(value); return *this; }
-
-    operator unsigned_value_type () const { return getSequence(); }
+    ConstPack<Pack, R> operator , (const R& rhs) const
+    {
+        return ConstPack<Pack, R>(*this, rhs);
+    }
 
 private:
-    Bits<LHS>& lhs_;
-    int (*rhs_)();
+    LHS& lhs_;
 };
 
 template<class LHS, class RHS>
-class ConstPack : public Bits<long>
+class ConstPack
 {
 public:
-    typedef Bits<long>::unsigned_value_type unsigned_value_type;
+    static const int Size = LHS::Size + RHS::Size;
 
-    ConstPack(const Bits<LHS>& lhs, const Bits<RHS>& rhs) : lhs_(lhs), rhs_(rhs), size_(lhs.size() + rhs.size()) {}
+    typedef typename detail::Width<Size>::value_type value_type;
 
-    int size() const { return size_; }
-
-    void setSequence(unsigned_value_type) { /* nop: This function is not used */ }
-
-    unsigned_value_type getSequence() const
+    ConstPack(const LHS& lhs, const RHS& rhs) : lhs_(lhs), rhs_(rhs)
     {
-        return (lhs_.getSequence() << rhs_.size()) | rhs_.getSequence();
+    }
+
+    static int size()
+    {
+        return Size;
+    }
+
+    value_type getSequence() const
+    {
+        return (lhs_.getSequence() << RHS::Size) | rhs_.getSequence();
+    }
+
+    operator value_type () const
+    {
+        return getSequence();
     }
 
     template<class R>
-    ConstPack<long, R> operator , (Bits<R>& rhs) const { return ConstPack<long, R>(*this, rhs); }
-
-    operator unsigned_value_type () const { return getSequence(); }
+    ConstPack<ConstPack, R> operator , (R& rhs) const
+    {
+        return ConstPack<ConstPack, R>(*this, rhs);
+    }
 
 private:
-    const Bits<LHS>& lhs_;
-    const Bits<RHS>& rhs_;
-    const int        size_;
+    const LHS& lhs_;
+    const RHS& rhs_;
 };
 
-template<class LHS>
-class ConstPack<LHS, int(*)()> : public Bits<long>
+template<class LHS, int N>
+class ConstPack<LHS, detail::Reserved<N>*(*)()>
 {
 public:
-    typedef Bits<long>::unsigned_value_type unsigned_value_type;
+    static const int Size = LHS::Size + N;
 
-    ConstPack(const Bits<LHS>& lhs, int (*rhs)()) : lhs_(lhs), rhs_(rhs) {}
+    typedef typename detail::Width<Size>::value_type value_type;
 
-    int size() const { return lhs_.size() + rhs_(); }
-
-    void setSequence(unsigned_value_type) { /* nop: This function is not used */ }
-
-    unsigned_value_type getSequence() const
+    ConstPack(const LHS& lhs, detail::Reserved<N>*(*)()) : lhs_(lhs)
     {
-        return lhs_.getSequence() << rhs_();
+    }
+
+    static int size()
+    {
+        return Size;
+    }
+
+    value_type getSequence() const
+    {
+        return lhs_.getSequence() << N;
+    }
+
+    operator value_type () const
+    {
+        return getSequence();
     }
 
     template<class R>
-    ConstPack<long, R> operator , (Bits<R>& rhs) const { return ConstPack<long, R>(*this, rhs); }
-
-    operator unsigned_value_type () const { return getSequence(); }
+    ConstPack<ConstPack, R> operator , (R& rhs) const
+    {
+        return ConstPack<ConstPack, R>(*this, rhs);
+    }
 
 private:
-    const Bits<LHS>& lhs_;
-    int (*rhs_)();
+    const LHS& lhs_;
 };
+
+template<typename LHS, typename RHS>
+Pack<LHS, RHS> operator , (LHS& lhs, RHS& rhs)
+{
+    return Pack<LHS, RHS>(lhs, rhs);
+}
+
+template<typename LHS, int N>
+Pack<LHS, detail::Reserved<N>*(*)()> operator , (LHS& lhs, detail::Reserved<N>* (*rhs)())
+{
+    return Pack<LHS, detail::Reserved<N>*(*)()>(lhs, rhs);
+}
+
+template<typename LHS, typename RHS>
+ConstPack<LHS, RHS> operator , (const LHS& lhs, const RHS& rhs)
+{
+    return ConstPack<LHS, RHS>(lhs, rhs);
+}
+
+template<typename LHS, int N>
+ConstPack<LHS, detail::Reserved<N>*(*)()> operator , (const LHS& lhs, detail::Reserved<N>* (*rhs)())
+{
+    return ConstPack<LHS, detail::Reserved<N>*(*)()>(lhs, rhs);
+}
 
 template<int N>
-inline int reserve() { return N; }
+detail::Reserved<N>* reserve()
+{
+    return 0;
+}
 
 } // namespace bits
 

@@ -8,7 +8,7 @@
 using namespace emattsan;
 
 // 各々のビット列のサイズが設定された値になっていること
-TEST(Bits, SizeTest)
+TEST(SizeTest, Test0)
 {
     bits::Signed<1> sbits1;
     ASSERT_EQ(1, sbits1.size());
@@ -371,6 +371,55 @@ TEST(ReservedBitsTest, SetTest)
 
     ASSERT_EQ(2, static_cast<int>(bits1));
     ASSERT_EQ(3, static_cast<int>(bits2));
+}
+
+// ビット列型のサイズが値を格納する整数型のサイズと等しいこと
+TEST(SizeTest, Test1)
+{
+    ASSERT_EQ(sizeof(char),  sizeof(bits::Signed<1, char>));
+    ASSERT_EQ(sizeof(short), sizeof(bits::Signed<1, short>));
+    ASSERT_EQ(sizeof(int),   sizeof(bits::Signed<1, int>));
+    ASSERT_EQ(sizeof(long),  sizeof(bits::Signed<1, long>));
+    ASSERT_EQ(sizeof(char),  sizeof(bits::Unsigned<1, char>));
+    ASSERT_EQ(sizeof(short), sizeof(bits::Unsigned<1, short>));
+    ASSERT_EQ(sizeof(int),   sizeof(bits::Unsigned<1, int>));
+    ASSERT_EQ(sizeof(long),  sizeof(bits::Unsigned<1, long>));
+}
+
+// 連結したビット列の値の型が、その値を格納できる最小の整数型になっていること（１）
+TEST(SizeTest, Test2)
+{
+    bits::Signed<4, char> bits1;
+
+    ASSERT_EQ(sizeof(char), sizeof(bits1, bits1).getSequence());
+    ASSERT_EQ(sizeof(short), sizeof(bits1, bits1, bits1).getSequence());
+    ASSERT_EQ(sizeof(short), sizeof(bits1, bits1, bits1).getSequence());
+    ASSERT_EQ(sizeof(short), sizeof(bits1, bits1, bits1, bits1).getSequence());
+    ASSERT_EQ(sizeof(int), sizeof(bits1, bits1, bits1, bits1, bits1).getSequence());
+}
+
+// 連結したビット列の値の型が、その値を格納できる最小の整数型になっていること（２）
+TEST(SizeTest, Test3)
+{
+    bits::Signed<2, char> bits1;
+
+    ASSERT_EQ(sizeof(char), sizeof(bits1, bits1).getSequence());
+    ASSERT_EQ(sizeof(char), sizeof(bits1, bits1, bits1).getSequence());
+    ASSERT_EQ(sizeof(char), sizeof(bits1, bits1, bits1).getSequence());
+    ASSERT_EQ(sizeof(char), sizeof(bits1, bits1, bits1, bits1).getSequence());
+    ASSERT_EQ(sizeof(short), sizeof(bits1, bits1, bits1, bits1, bits1).getSequence());
+}
+
+// 連結したビット列の値の型が、その値を格納できる最小の整数型になっていること（３）
+TEST(SizeTest, Test4)
+{
+    bits::Signed<2, char> bits1;
+
+    ASSERT_EQ(sizeof(char), sizeof(bits1, bits::reserve<6>).getSequence());
+    ASSERT_EQ(sizeof(short), sizeof(bits1, bits::reserve<7>).getSequence());
+    ASSERT_EQ(sizeof(short), sizeof(bits1, bits::reserve<14>).getSequence());
+    ASSERT_EQ(sizeof(int), sizeof(bits1, bits::reserve<15>).getSequence());
+    ASSERT_EQ(sizeof(int), sizeof(bits1, bits::reserve<30>).getSequence());
 }
 
 // entry point
