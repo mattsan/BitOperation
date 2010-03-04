@@ -1,0 +1,46 @@
+bits operating classes
+written by MATSUMOTO Eiji
+from March 2, 2010
+
+0. Basis
+
+    include file : Bits.h
+    namespace    : emattsan::bits
+
+1. Integer types of specified number of bits
+
+    Signed<4> s;   // signed 4 bit integer (-8..7)
+    Unsigned<4> u; // unsigned 4 bit integer (0..15)
+
+    s = 7;  // s => 7
+    s = 8;  // s => -8
+    s = 15; // s => -1
+    s = 16; // s => 0
+
+    u = 7;  // u => 7
+    u = 8;  // u => 8
+    u = 15; // u => 15
+    u = 16; // u => 0
+
+2. Join
+
+    Signed<4>   s(1); // s => 1 ( 0001b )
+    Unsigned<4> u(8); // u => 8 ( 1000b )
+
+    int n = (s, u); // n => 24 ( 18h / 00011000b )
+
+    int n = (s, s, s); // n => 265 ( 111h / 000100010001b )
+
+    (s, n) = 0x5a; // s => 5, n = 10 ( 0ah )
+
+3. Reserved bits
+
+    Signed<4>   s(1); // s => 1 ( 0001b )
+    Unsigned<4> u(8); // u => 8 ( 1000b )
+
+    int n = (s, reserve<2>, u); // n => 72 ( 048h / 0001001000b )
+
+    (s, reserve<2>, u) = 0xff; // s => 3 ( 0011b), (2 reserved bits discarded), u => 15 ( 1111b ), 
+
+
+<<EOF>>
