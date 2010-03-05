@@ -113,7 +113,8 @@ public:
     typedef typename detail::Traits<T>::unsigned_value_type unsigned_value_type;
     typedef typename detail::Traits<T>::signed_value_type   value_type;
 
-    static const int Size = SIZE;
+    static const int                 Size = SIZE;
+    static const unsigned_value_type Mask = ((1u << Size) - 1);
 
     explicit Signed(value_type n = 0) : value_(trim(n))
     {
@@ -147,12 +148,12 @@ public:
 
     void setSequence(unsigned_value_type value)
     {
-        set(value);
+        value_ = trim(value);
     }
 
     unsigned_value_type getSequence() const
     {
-        return static_cast<unsigned_value_type>(value_) & ((1u << Size) - 1);
+        return static_cast<unsigned_value_type>(value_) & Mask;
     };
 
 private:
@@ -174,7 +175,8 @@ public:
     typedef typename detail::Traits<T>::unsigned_value_type unsigned_value_type;
     typedef typename detail::Traits<T>::unsigned_value_type value_type;
 
-    static const int Size = SIZE;
+    static const int                 Size = SIZE;
+    static const unsigned_value_type Mask = ((1u << Size) - 1);
 
     explicit Unsigned(value_type n = 0) : value_(trim(n))
     {
@@ -208,12 +210,12 @@ public:
 
     void setSequence(unsigned_value_type value)
     {
-        set(value);
+        value_ = trim(value);
     }
 
     unsigned_value_type getSequence() const
     {
-        return static_cast<unsigned_value_type>(value_) & ((1u << Size) - 1);
+        return static_cast<unsigned_value_type>(value_) & Mask;
     };
 
 private:
