@@ -116,7 +116,11 @@ public:
     static const int                 Size = SIZE;
     static const unsigned_value_type Mask = ((1u << Size) - 1);
 
-    explicit Signed(value_type n = 0) : value_(trim(n))
+    Signed() : value_(0)
+    {
+    }
+
+    explicit Signed(value_type n) : value_(trim(n))
     {
     }
 
@@ -125,23 +129,23 @@ public:
         return Size;
     }
 
-    Signed& set(value_type n)
+    Signed& set(signed_value_type n)
     {
         value_ = trim(n);
         return *this;
     }
 
-    value_type get() const
+    signed_value_type get() const
     {
         return value_;
     }
 
-    Signed& operator = (value_type n)
+    Signed& operator = (signed_value_type n)
     {
         return set(n);
     }
 
-    operator value_type () const
+    operator signed_value_type () const
     {
         return get();
     }
@@ -178,7 +182,11 @@ public:
     static const int                 Size = SIZE;
     static const unsigned_value_type Mask = ((1u << Size) - 1);
 
-    explicit Unsigned(value_type n = 0) : value_(trim(n))
+    Unsigned() : value_(0)
+    {
+    }
+
+    explicit Unsigned(value_type n) : value_(trim(n))
     {
     }
 
@@ -187,23 +195,23 @@ public:
         return Size;
     }
 
-    Unsigned& set(value_type n)
+    Unsigned& set(unsigned_value_type n)
     {
         value_ = trim(n);
         return *this;
     }
 
-    value_type get() const
+    unsigned_value_type get() const
     {
         return value_;
     }
 
-    Unsigned& operator = (value_type n)
+    Unsigned& operator = (unsigned_value_type n)
     {
         return set(n);
     }
 
-    operator value_type () const
+    operator unsigned_value_type () const
     {
         return get();
     }
@@ -221,7 +229,8 @@ public:
 private:
     value_type trim(value_type n)
     {
-        return n & ((1u << Size) - 1);
+        n &= Mask;
+        return n;
     }
 
     value_type value_;
