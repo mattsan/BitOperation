@@ -363,12 +363,6 @@ public:
         return getSequence();
     }
 
-    template<class R>
-    ConstPack<ConstPack, R> operator , (R& rhs) const
-    {
-        return ConstPack<ConstPack, R>(*this, rhs);
-    }
-
 private:
     const LHS& lhs_;
     const RHS& rhs_;
@@ -399,12 +393,6 @@ public:
     operator value_type () const
     {
         return getSequence();
-    }
-
-    template<class R>
-    ConstPack<ConstPack, R> operator , (R& rhs) const
-    {
-        return ConstPack<ConstPack, R>(*this, rhs);
     }
 
 private:
