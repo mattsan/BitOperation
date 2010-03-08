@@ -288,9 +288,9 @@ public:
     }
 
     template<int N>
-    Pack<Pack, detail::Reserved<N>*(*)()> operator , (detail::Reserved<N>* (*rhs)())
+    Pack<Pack, void (*)(detail::Reserved<N>*)> operator , (void (*rhs)(detail::Reserved<N>*))
     {
-        return Pack<Pack, detail::Reserved<N>*(*)()>(*this, rhs);
+        return Pack<Pack, void (*)(detail::Reserved<N>*)>(*this, rhs);
     }
 
 private:
@@ -299,14 +299,14 @@ private:
 };
 
 template<class LHS, int N>
-class Pack<LHS, detail::Reserved<N>*(*)()>
+class Pack<LHS, void (*)(detail::Reserved<N>*)>
 {
 public:
     static const int Size = LHS::Size + N;
 
     typedef typename detail::Width<Size>::value_type value_type;
 
-    Pack(LHS& lhs, detail::Reserved<N>*(*)()) : lhs_(lhs)
+    Pack(LHS& lhs, void (*)(detail::Reserved<N>*)) : lhs_(lhs)
     {
     }
 
@@ -348,9 +348,9 @@ public:
     }
 
     template<int M>
-    Pack<Pack, detail::Reserved<M>*(*)()> operator , (detail::Reserved<M>* (*rhs)())
+    Pack<Pack, void (*)(detail::Reserved<M>*)> operator , (void (*rhs)(detail::Reserved<M>*))
     {
-        return Pack<Pack, detail::Reserved<M>*(*)()>(*this, rhs);
+        return Pack<Pack, void (*)(detail::Reserved<M>*)>(*this, rhs);
     }
 
 private:
@@ -390,14 +390,14 @@ private:
 };
 
 template<class LHS, int N>
-class ConstPack<LHS, detail::Reserved<N>*(*)()>
+class ConstPack<LHS, void (*)(detail::Reserved<N>*)>
 {
 public:
     static const int Size = LHS::Size + N;
 
     typedef typename detail::Width<Size>::value_type value_type;
 
-    ConstPack(const LHS& lhs, detail::Reserved<N>*(*)()) : lhs_(lhs)
+    ConstPack(const LHS& lhs, void (*)(detail::Reserved<N>*)) : lhs_(lhs)
     {
     }
 
@@ -427,9 +427,9 @@ Pack<LHS, RHS> operator , (LHS& lhs, RHS& rhs)
 }
 
 template<typename LHS, int N>
-Pack<LHS, detail::Reserved<N>*(*)()> operator , (LHS& lhs, detail::Reserved<N>* (*rhs)())
+Pack<LHS, void (*)(detail::Reserved<N>*)> operator , (LHS& lhs, void (*rhs)(detail::Reserved<N>*))
 {
-    return Pack<LHS, detail::Reserved<N>*(*)()>(lhs, rhs);
+    return Pack<LHS, void (*)(detail::Reserved<N>*)>(lhs, rhs);
 }
 
 template<typename LHS, typename RHS>
@@ -439,16 +439,12 @@ ConstPack<LHS, RHS> operator , (const LHS& lhs, const RHS& rhs)
 }
 
 template<typename LHS, int N>
-ConstPack<LHS, detail::Reserved<N>*(*)()> operator , (const LHS& lhs, detail::Reserved<N>* (*rhs)())
+ConstPack<LHS, void (*)(detail::Reserved<N>*)> operator , (const LHS& lhs, void (*rhs)(detail::Reserved<N>*))
 {
-    return ConstPack<LHS, detail::Reserved<N>*(*)()>(lhs, rhs);
+    return ConstPack<LHS, void (*)(detail::Reserved<N>*)>(lhs, rhs);
 }
 
-template<int N>
-detail::Reserved<N>* reserve()
-{
-    return 0;
-}
+template<int N> void reserve(detail::Reserved<N>*) {}
 
 } // namespace bits
 
