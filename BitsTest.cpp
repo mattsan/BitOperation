@@ -343,7 +343,7 @@ TEST(PackTest, MixedSetTest)
 }
 
 // 連結したビット列から値を得られること（利用しない領域を含む）
-TEST(ReservedBitsTest, GetTest)
+TEST(ReservedBitsTest, GetTest1)
 {
     bits::Signed<3> bits1(2);
     bits::Signed<3> bits2(3);
@@ -358,8 +358,36 @@ TEST(ReservedBitsTest, GetTest)
     ASSERT_EQ(0x43, static_cast<int>(bits1, bits::reserve<2>, bits2));
 }
 
+// 連結したビット列から値を得られること（利用しない領域を含む）（3要素）
+TEST(ReservedBitsTest, GetTest2)
+{
+    bits::Signed<3> bits1(2);
+    bits::Signed<3> bits2(3);
+    bits::Signed<3> bits3(4);
+
+    ASSERT_EQ(2, static_cast<int>(bits1));
+    ASSERT_EQ(3, static_cast<int>(bits2));
+    ASSERT_EQ(-4, static_cast<int>(bits3));
+
+    ASSERT_EQ(0x434, static_cast<int>(bits1, bits::reserve<2>, bits2, bits::reserve<1>, bits3));
+}
+
+// 連結したビット列から値を得られること（利用しない領域を含む）（3要素）（定数）
+TEST(ReservedBitsTest, GetTest3)
+{
+    const bits::Signed<3> bits1(2);
+    const bits::Signed<3> bits2(3);
+    const bits::Signed<3> bits3(4);
+
+    ASSERT_EQ(2, static_cast<int>(bits1));
+    ASSERT_EQ(3, static_cast<int>(bits2));
+    ASSERT_EQ(-4, static_cast<int>(bits3));
+
+    ASSERT_EQ(0x434, static_cast<int>(bits1, bits::reserve<2>, bits2, bits::reserve<1>, bits3));
+}
+
 // 連結したビット列に値を代入すると、元のビット列に値が反映されること（利用しない領域を含む）
-TEST(ReservedBitsTest, SetTest)
+TEST(ReservedBitsTest, SetTest1)
 {
     bits::Signed<3> bits1;
     bits::Signed<3> bits2;
@@ -371,6 +399,24 @@ TEST(ReservedBitsTest, SetTest)
 
     ASSERT_EQ(2, static_cast<int>(bits1));
     ASSERT_EQ(3, static_cast<int>(bits2));
+}
+
+// 連結したビット列に値を代入すると、元のビット列に値が反映されること（利用しない領域を含む）（3要素）
+TEST(ReservedBitsTest, SetTest2)
+{
+    bits::Signed<3> bits1;
+    bits::Signed<3> bits2;
+    bits::Signed<3> bits3;
+
+    ASSERT_EQ(0, static_cast<int>(bits1));
+    ASSERT_EQ(0, static_cast<int>(bits2));
+    ASSERT_EQ(0, static_cast<int>(bits3));
+
+    (bits1, bits::reserve<2>, bits2, bits::reserve<1>, bits3) = 0x434;
+
+    ASSERT_EQ(2, static_cast<int>(bits1));
+    ASSERT_EQ(3, static_cast<int>(bits2));
+    ASSERT_EQ(-4, static_cast<int>(bits3));
 }
 
 // ビット列型のサイズが値を格納する整数型のサイズと等しいこと

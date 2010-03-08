@@ -287,6 +287,12 @@ public:
         return ConstPack<Pack, R>(*this, rhs);
     }
 
+    template<int N>
+    Pack<Pack, detail::Reserved<N>*(*)()> operator , (detail::Reserved<N>* (*rhs)())
+    {
+        return Pack<Pack, detail::Reserved<N>*(*)()>(*this, rhs);
+    }
+
 private:
     LHS& lhs_;
     RHS& rhs_;
@@ -339,6 +345,12 @@ public:
     ConstPack<Pack, R> operator , (const R& rhs) const
     {
         return ConstPack<Pack, R>(*this, rhs);
+    }
+
+    template<int M>
+    Pack<Pack, detail::Reserved<M>*(*)()> operator , (detail::Reserved<M>* (*rhs)())
+    {
+        return Pack<Pack, detail::Reserved<M>*(*)()>(*this, rhs);
     }
 
 private:
