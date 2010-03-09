@@ -98,6 +98,15 @@ struct Width
                       >::value_type value_type;
 };
 
+template<typename T, int N>
+struct Mask
+{
+    template<int M, bool F> struct _   { static const T value = ((1u << M) - 1);    };
+    template<int M> struct _<M, false> { static const T value = static_cast<T>(-1); };
+
+    static const T value = _<N, N < std::numeric_limits<T>::digits>::value;
+};
+
 template<int N> struct Reserved;
 
 } // namespace detail
@@ -114,7 +123,7 @@ public:
     typedef typename detail::Traits<T>::signed_value_type   value_type;
 
     static const int                 Size = SIZE;
-    static const unsigned_value_type Mask = ((1u << Size) - 1);
+    static const unsigned_value_type Mask = detail::Mask<unsigned_value_type, Size>::value;
 
     Signed() : value_(0)
     {
@@ -180,7 +189,7 @@ public:
     typedef typename detail::Traits<T>::unsigned_value_type value_type;
 
     static const int                 Size = SIZE;
-    static const unsigned_value_type Mask = ((1u << Size) - 1);
+    static const unsigned_value_type Mask = detail::Mask<unsigned_value_type, Size>::value;
 
     Unsigned() : value_(0)
     {

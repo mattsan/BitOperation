@@ -468,6 +468,150 @@ TEST(SizeTest, Test4)
     ASSERT_EQ(sizeof(int), sizeof(bits1, bits::reserve<30>).getSequence());
 }
 
+TEST(BoundaryTest, SignedTest1)
+{
+    bits::Signed<8, char> s8;
+    ASSERT_EQ(0, static_cast<int>(s8));
+
+    s8 = 127;
+    ASSERT_EQ(127, static_cast<int>(s8));
+
+    s8 = 128;
+    ASSERT_EQ(-128, static_cast<int>(s8));
+
+    s8 = 255;
+    ASSERT_EQ(-1, static_cast<int>(s8));
+
+    s8 = 256;
+    ASSERT_EQ(0, static_cast<int>(s8));
+}
+
+TEST(BoundaryTest, SignedTest2)
+{
+    bits::Signed<16, short> s16;
+    ASSERT_EQ(0, static_cast<int>(s16));
+
+    s16 = 32767;
+    ASSERT_EQ(32767, static_cast<int>(s16));
+
+    s16 = 32768;
+    ASSERT_EQ(-32768, static_cast<int>(s16));
+
+    s16 = 65535;
+    ASSERT_EQ(-1, static_cast<int>(s16));
+
+    s16 = 65536;
+    ASSERT_EQ(0, static_cast<int>(s16));
+}
+
+TEST(BoundaryTest, SignedTest3)
+{
+    bits::Signed<32, int> s32;
+    ASSERT_EQ(0, static_cast<int>(s32));
+
+    s32 = 2147483647;
+    ASSERT_EQ(2147483647, static_cast<int>(s32));
+
+    s32 = 0x80000000;
+    ASSERT_EQ(static_cast<int>(0x80000000), static_cast<int>(s32));
+
+    s32 = -1;
+    ASSERT_EQ(-1, static_cast<int>(s32));
+
+    s32 = 0;
+    ASSERT_EQ(0, static_cast<int>(s32));
+}
+
+TEST(BoundaryTest, SignedTest4)
+{
+    bits::Signed<32, long> s32;
+    ASSERT_EQ(0, static_cast<int>(s32));
+
+    s32 = 2147483647;
+    ASSERT_EQ(2147483647, static_cast<int>(s32));
+
+    s32 = 0x80000000;
+    ASSERT_EQ(static_cast<int>(0x80000000), static_cast<int>(s32));
+
+    s32 = -1;
+    ASSERT_EQ(-1, static_cast<int>(s32));
+
+    s32 = 0;
+    ASSERT_EQ(0, static_cast<int>(s32));
+}
+
+TEST(BoundaryTest, UnsignedTest1)
+{
+    bits::Unsigned<8, char> u8;
+    ASSERT_EQ(0u, static_cast<unsigned int>(u8));
+
+    u8 = 127u;
+    ASSERT_EQ(127u, static_cast<unsigned int>(u8));
+
+    u8 = 128u;
+    ASSERT_EQ(128u, static_cast<unsigned int>(u8));
+
+    u8 = 255u;
+    ASSERT_EQ(255u, static_cast<unsigned int>(u8));
+
+    u8 = 256u;
+    ASSERT_EQ(0u, static_cast<unsigned int>(u8));
+}
+
+TEST(BoundaryTest, UnsignedTest2)
+{
+    bits::Unsigned<16, short> u16;
+    ASSERT_EQ(0u, static_cast<unsigned int>(u16));
+
+    u16 = 32767u;
+    ASSERT_EQ(32767u, static_cast<unsigned int>(u16));
+
+    u16 = 32768u;
+    ASSERT_EQ(32768u, static_cast<unsigned int>(u16));
+
+    u16 = 65535u;
+    ASSERT_EQ(65535u, static_cast<unsigned int>(u16));
+
+    u16 = 65536u;
+    ASSERT_EQ(0u, static_cast<unsigned int>(u16));
+}
+
+TEST(BoundaryTest, UnsignedTest3)
+{
+    bits::Unsigned<32, int> u32;
+    ASSERT_EQ(0u, static_cast<unsigned int>(u32));
+
+    u32 = 2147483647u;
+    ASSERT_EQ(2147483647u, static_cast<unsigned int>(u32));
+
+    u32 = 0x80000000u;
+    ASSERT_EQ(0x80000000u, static_cast<unsigned int>(u32));
+
+    u32 = static_cast<unsigned int>(-1);
+    ASSERT_EQ(0xffffffffu, static_cast<unsigned int>(u32));
+
+    u32 = 0u;
+    ASSERT_EQ(0u, static_cast<unsigned int>(u32));
+}
+
+TEST(BoundaryTest, UnsignedTest4)
+{
+    bits::Unsigned<32, long> u32;
+    ASSERT_EQ(0u, static_cast<unsigned int>(u32));
+
+    u32 = 2147483647u;
+    ASSERT_EQ(2147483647u, static_cast<unsigned int>(u32));
+
+    u32 = 0x80000000u;
+    ASSERT_EQ(0x80000000u, static_cast<unsigned int>(u32));
+
+    u32 = static_cast<unsigned long>(-1);
+    ASSERT_EQ(0xffffffffu, static_cast<unsigned int>(u32));
+
+    u32 = 0u;
+    ASSERT_EQ(0u, static_cast<unsigned int>(u32));
+}
+
 // entry point
 int main(int argc, char* argv[])
 {
