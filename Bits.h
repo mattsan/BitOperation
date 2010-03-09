@@ -232,7 +232,7 @@ public:
 
     unsigned_value_type getSequence() const
     {
-        return static_cast<unsigned_value_type>(value_) & Mask;
+        return value_;
     };
 
 private:
@@ -290,16 +290,16 @@ public:
         return Pack<Pack, R>(*this, rhs);
     }
 
-    template<class R>
-    ConstPack<Pack, R> operator , (const R& rhs) const
-    {
-        return ConstPack<Pack, R>(*this, rhs);
-    }
-
     template<int N>
     Pack<Pack, void (*)(detail::Reserved<N>*)> operator , (void (*rhs)(detail::Reserved<N>*))
     {
         return Pack<Pack, void (*)(detail::Reserved<N>*)>(*this, rhs);
+    }
+
+    template<class R>
+    ConstPack<Pack, R> operator , (const R& rhs) const
+    {
+        return ConstPack<Pack, R>(*this, rhs);
     }
 
 private:
@@ -336,7 +336,8 @@ public:
 
     Pack& operator = (value_type value)
     {
-        setSequence(value); return *this;
+        setSequence(value);
+        return *this;
     }
 
     operator value_type () const
@@ -350,16 +351,16 @@ public:
         return Pack<Pack, R>(*this, rhs);
     }
 
-    template<class R>
-    ConstPack<Pack, R> operator , (const R& rhs) const
-    {
-        return ConstPack<Pack, R>(*this, rhs);
-    }
-
     template<int M>
     Pack<Pack, void (*)(detail::Reserved<M>*)> operator , (void (*rhs)(detail::Reserved<M>*))
     {
         return Pack<Pack, void (*)(detail::Reserved<M>*)>(*this, rhs);
+    }
+
+    template<class R>
+    ConstPack<Pack, R> operator , (const R& rhs) const
+    {
+        return ConstPack<Pack, R>(*this, rhs);
     }
 
 private:
