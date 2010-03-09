@@ -1,6 +1,8 @@
 #ifndef EMATTSAN_BITS_H
 #define EMATTSAN_BITS_H
 
+#include <limits>
+
 namespace emattsan
 {
 
@@ -89,12 +91,10 @@ struct Width
         typedef Traits<int>::unsigned_value_type value_type;
     };
 
-    static const int BitsPerChar = 8;
-
-    typedef typename _< (N <= BitsPerChar),
-                        (N <= (sizeof(short) * BitsPerChar)),
-                        (N <= (sizeof(int) * BitsPerChar)),
-                        (N <= (sizeof(long) * BitsPerChar))
+    typedef typename _< (N <= std::numeric_limits<unsigned char>::digits),
+                        (N <= std::numeric_limits<unsigned short>::digits),
+                        (N <= std::numeric_limits<unsigned int>::digits),
+                        (N <= std::numeric_limits<unsigned long>::digits)
                       >::value_type value_type;
 };
 
@@ -163,8 +163,8 @@ public:
 private:
     value_type trim(value_type n)
     {
-        n <<= ((sizeof(n) * 8) - Size);
-        n >>= ((sizeof(n) * 8) - Size);
+        n <<= (std::numeric_limits<unsigned_value_type>::digits - Size);
+        n >>= (std::numeric_limits<unsigned_value_type>::digits - Size);
         return n;
     }
 
