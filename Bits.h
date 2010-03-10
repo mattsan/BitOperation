@@ -111,8 +111,8 @@ template<int N> struct Reserved;
 
 } // namespace detail
 
-template<class LHS, class RHS> class Pack;
-template<class LHS, class RHS> class ConstPack;
+template<typename LHS, typename RHS> class Pack;
+template<typename LHS, typename RHS> class ConstPack;
 
 template<int SIZE, typename T = unsigned int>
 class Signed
@@ -245,7 +245,7 @@ private:
     value_type value_;
 };
 
-template<class LHS, class RHS>
+template<typename LHS, typename RHS>
 class Pack
 {
 public:
@@ -284,10 +284,16 @@ public:
         return getSequence();
     }
 
-    template<class R>
-    Pack<Pack, R> operator , (R& rhs)
+    template<int M, typename U>
+    Pack<Pack, Signed<M, U> > operator , (Signed<M, U>& rhs)
     {
-        return Pack<Pack, R>(*this, rhs);
+        return Pack<Pack, Signed<M, U> >(*this, rhs);
+    }
+
+    template<int M, typename U>
+    Pack<Pack, Unsigned<M, U> > operator , (Unsigned<M, U>& rhs)
+    {
+        return Pack<Pack, Unsigned<M, U> >(*this, rhs);
     }
 
     template<int N>
@@ -296,10 +302,34 @@ public:
         return Pack<Pack, void (*)(detail::Reserved<N>*)>(*this, rhs);
     }
 
-    template<class R>
-    ConstPack<Pack, R> operator , (const R& rhs) const
+    template<int M, typename U>
+    ConstPack<Pack, Signed<M, U> > operator , (const Signed<M, U>& rhs) const
     {
-        return ConstPack<Pack, R>(*this, rhs);
+        return ConstPack<Pack, Signed<M, U> >(*this, rhs);
+    }
+
+    template<int M, typename U>
+    ConstPack<Pack, Unsigned<M, U> > operator , (const Unsigned<M, U>& rhs) const
+    {
+        return ConstPack<Pack, Unsigned<M, U> >(*this, rhs);
+    }
+
+    template<typename L, typename R>
+    ConstPack<Pack, Pack<L, R> > operator , (const Pack<L, R>& rhs) const
+    {
+        return ConstPack<Pack, Pack<L, R> >(*this, rhs);
+    }
+
+    template<typename L, typename R>
+    ConstPack<Pack, ConstPack<L, R> > operator , (const ConstPack<L, R>& rhs) const
+    {
+        return ConstPack<Pack, ConstPack<L, R> >(*this, rhs);
+    }
+
+    template<int N>
+    ConstPack<Pack, void (*)(detail::Reserved<N>*)> operator , (void (*rhs)(detail::Reserved<N>*)) const
+    {
+        return ConstPack<Pack, void (*)(detail::Reserved<N>*)>(*this, rhs);
     }
 
 private:
@@ -307,7 +337,7 @@ private:
     RHS& rhs_;
 };
 
-template<class LHS, int N>
+template<typename LHS, int N>
 class Pack<LHS, void (*)(detail::Reserved<N>*)>
 {
 public:
@@ -345,10 +375,16 @@ public:
         return getSequence();
     }
 
-    template<class R>
-    Pack<Pack, R> operator , (R& rhs)
+    template<int M, typename U>
+    Pack<Pack, Signed<M, U> > operator , (Signed<M, U>& rhs)
     {
-        return Pack<Pack, R>(*this, rhs);
+        return Pack<Pack, Signed<M, U> >(*this, rhs);
+    }
+
+    template<int M, typename U>
+    Pack<Pack, Unsigned<M, U> > operator , (Unsigned<M, U>& rhs)
+    {
+        return Pack<Pack, Unsigned<M, U> >(*this, rhs);
     }
 
     template<int M>
@@ -357,17 +393,41 @@ public:
         return Pack<Pack, void (*)(detail::Reserved<M>*)>(*this, rhs);
     }
 
-    template<class R>
-    ConstPack<Pack, R> operator , (const R& rhs) const
+    template<int M, typename U>
+    ConstPack<Pack, Signed<M, U> > operator , (const Signed<M, U>& rhs) const
     {
-        return ConstPack<Pack, R>(*this, rhs);
+        return ConstPack<Pack, Signed<M, U> >(*this, rhs);
+    }
+
+    template<int M, typename U>
+    ConstPack<Pack, Unsigned<M, U> > operator , (const Unsigned<M, U>& rhs) const
+    {
+        return ConstPack<Pack, Unsigned<M, U> >(*this, rhs);
+    }
+
+    template<typename L, typename R>
+    ConstPack<Pack, Pack<L, R> > operator , (const Pack<L, R>& rhs) const
+    {
+        return ConstPack<Pack, Pack<L, R> >(*this, rhs);
+    }
+
+    template<typename L, typename R>
+    ConstPack<Pack, ConstPack<L, R> > operator , (const ConstPack<L, R>& rhs) const
+    {
+        return ConstPack<Pack, ConstPack<L, R> >(*this, rhs);
+    }
+
+    template<int M>
+    ConstPack<Pack, void (*)(detail::Reserved<M>*)> operator , (void (*rhs)(detail::Reserved<M>*)) const
+    {
+        return ConstPack<Pack, void (*)(detail::Reserved<M>*)>(*this, rhs);
     }
 
 private:
     LHS& lhs_;
 };
 
-template<class LHS, class RHS>
+template<typename LHS, typename RHS>
 class ConstPack
 {
 public:
@@ -394,12 +454,42 @@ public:
         return getSequence();
     }
 
+    template<int M, typename U>
+    ConstPack<ConstPack, Signed<M, U> > operator , (const Signed<M, U>& rhs) const
+    {
+        return ConstPack<ConstPack, Signed<M, U> >(*this, rhs);
+    }
+
+    template<int M, typename U>
+    ConstPack<ConstPack, Unsigned<M, U> > operator , (const Unsigned<M, U>& rhs) const
+    {
+        return ConstPack<ConstPack, Unsigned<M, U> >(*this, rhs);
+    }
+
+    template<typename L, typename R>
+    ConstPack<ConstPack, Pack<L, R> > operator , (const Pack<L, R>& rhs) const
+    {
+        return ConstPack<ConstPack, Pack<L, R> >(*this, rhs);
+    }
+
+    template<typename L, typename R>
+    ConstPack<ConstPack, ConstPack<L, R> > operator , (const ConstPack<L, R>& rhs) const
+    {
+        return ConstPack<ConstPack, ConstPack<L, R> >(*this, rhs);
+    }
+
+    template<int N>
+    ConstPack<ConstPack, void (*)(detail::Reserved<N>*)> operator , (void (*rhs)(detail::Reserved<N>*)) const
+    {
+        return ConstPack<ConstPack, void (*)(detail::Reserved<N>*)>(*this, rhs);
+    }
+
 private:
     const LHS& lhs_;
     const RHS& rhs_;
 };
 
-template<class LHS, int N>
+template<typename LHS, int N>
 class ConstPack<LHS, void (*)(detail::Reserved<N>*)>
 {
 public:
@@ -426,32 +516,134 @@ public:
         return getSequence();
     }
 
+    template<int M, typename U>
+    ConstPack<ConstPack, Signed<M, U> > operator , (const Signed<M, U>& rhs) const
+    {
+        return ConstPack<ConstPack, Signed<M, U> >(*this, rhs);
+    }
+
+    template<int M, typename U>
+    ConstPack<ConstPack, Unsigned<M, U> > operator , (const Unsigned<M, U>& rhs) const
+    {
+        return ConstPack<ConstPack, Unsigned<M, U> >(*this, rhs);
+    }
+
+    template<typename L, typename R>
+    ConstPack<ConstPack, Pack<L, R> > operator , (const Pack<L, R>& rhs) const
+    {
+        return ConstPack<ConstPack, Pack<L, R> >(*this, rhs);
+    }
+
+    template<typename L, typename R>
+    ConstPack<ConstPack, ConstPack<L, R> > operator , (const ConstPack<L, R>& rhs) const
+    {
+        return ConstPack<ConstPack, ConstPack<L, R> >(*this, rhs);
+    }
+
+    template<int M>
+    ConstPack<ConstPack, void (*)(detail::Reserved<M>*)> operator , (void (*rhs)(detail::Reserved<M>*)) const
+    {
+        return ConstPack<ConstPack, void (*)(detail::Reserved<M>*)>(*this, rhs);
+    }
+
 private:
     const LHS& lhs_;
 };
 
-template<typename LHS, typename RHS>
-Pack<LHS, RHS> operator , (LHS& lhs, RHS& rhs)
+template<int N, typename T, int M, typename U>
+Pack<Signed<N, T>, Signed<M, U> > operator , (Signed<N, T>& lhs, Signed<M, U>& rhs)
 {
-    return Pack<LHS, RHS>(lhs, rhs);
+    return Pack<Signed<N, T>, Signed<M, U> >(lhs, rhs);
 }
 
-template<typename LHS, int N>
-Pack<LHS, void (*)(detail::Reserved<N>*)> operator , (LHS& lhs, void (*rhs)(detail::Reserved<N>*))
+template<int N, typename T, int M, typename U>
+Pack<Signed<N, T>, Unsigned<M, U> > operator , (Signed<N, T>& lhs, Unsigned<M, U>& rhs)
 {
-    return Pack<LHS, void (*)(detail::Reserved<N>*)>(lhs, rhs);
+    return Pack<Signed<N, T>, Unsigned<M, U> >(lhs, rhs);
 }
 
-template<typename LHS, typename RHS>
-ConstPack<LHS, RHS> operator , (const LHS& lhs, const RHS& rhs)
+template<int N, typename T, int M, typename U>
+Pack<Unsigned<N, T>, Signed<M, U> > operator , (Unsigned<N, T>& lhs, Signed<M, U>& rhs)
 {
-    return ConstPack<LHS, RHS>(lhs, rhs);
+    return Pack<Unsigned<N, T>, Signed<M, U> >(lhs, rhs);
 }
 
-template<typename LHS, int N>
-ConstPack<LHS, void (*)(detail::Reserved<N>*)> operator , (const LHS& lhs, void (*rhs)(detail::Reserved<N>*))
+template<int N, typename T, int M, typename U>
+Pack<Unsigned<N, T>, Unsigned<M, U> > operator , (Unsigned<N, T>& lhs, Unsigned<M, U>& rhs)
 {
-    return ConstPack<LHS, void (*)(detail::Reserved<N>*)>(lhs, rhs);
+    return Pack<Unsigned<N, T>, Unsigned<M, U> >(lhs, rhs);
+}
+
+template<int N, typename T, int M>
+Pack<Signed<N, T>, void (*)(detail::Reserved<M>*)> operator , (Signed<N, T>& lhs, void (*rhs)(detail::Reserved<M>*))
+{
+    return Pack<Signed<N, T>, void (*)(detail::Reserved<M>*)>(lhs, rhs);
+}
+
+template<int N, typename T, int M>
+Pack<Unsigned<N, T>, void (*)(detail::Reserved<M>*)> operator , (Unsigned<N, T>& lhs, void (*rhs)(detail::Reserved<M>*))
+{
+    return Pack<Unsigned<N, T>, void (*)(detail::Reserved<M>*)>(lhs, rhs);
+}
+
+template<int N, typename T, int M, typename U>
+ConstPack<Signed<N, T>, Signed<M, U> > operator , (const Signed<N, T>& lhs, const Signed<M, U>& rhs)
+{
+    return ConstPack<Signed<N, T>, Signed<M, U> >(lhs, rhs);
+}
+
+template<int N, typename T, int M, typename U>
+ConstPack<Signed<N, T>, Unsigned<M, U> > operator , (const Signed<N, T>& lhs, const Unsigned<M, U>& rhs)
+{
+    return ConstPack<Signed<N, T>, Unsigned<M, U> >(lhs, rhs);
+}
+
+template<int N, typename T, int M, typename U>
+ConstPack<Unsigned<N, T>, Signed<M, U> > operator , (const Unsigned<N, T>& lhs, const Signed<M, U>& rhs)
+{
+    return ConstPack<Unsigned<N, T>, Signed<M, U> >(lhs, rhs);
+}
+
+template<int N, typename T, int M, typename U>
+ConstPack<Unsigned<N, T>, Unsigned<M, U> > operator , (const Unsigned<N, T>& lhs, const Unsigned<M, U>& rhs)
+{
+    return ConstPack<Unsigned<N, T>, Unsigned<M, U> >(lhs, rhs);
+}
+
+template<int N, typename T, typename L, typename R>
+ConstPack<Signed<N, T>, Pack<L, R> > operator , (const Signed<N, T>& lhs, const Pack<L, R>& rhs)
+{
+    return ConstPack<Signed<N, T>, Pack<L, R> >(lhs, rhs);
+}
+
+template<int N, typename T, typename L, typename R>
+ConstPack<Unsigned<N, T>, Pack<L, R> > operator , (const Unsigned<N, T>& lhs, const Pack<L, R>& rhs)
+{
+    return ConstPack<Unsigned<N, T>, Pack<L, R> >(lhs, rhs);
+}
+
+template<int N, typename T, typename L, typename R>
+ConstPack<Signed<N, T>, ConstPack<L, R> > operator , (const Signed<N, T>& lhs, const ConstPack<L, R>& rhs)
+{
+    return ConstPack<Signed<N, T>, ConstPack<L, R> >(lhs, rhs);
+}
+
+template<int N, typename T, typename L, typename R>
+ConstPack<Unsigned<N, T>, ConstPack<L, R> > operator , (const Unsigned<N, T>& lhs, const ConstPack<L, R>& rhs)
+{
+    return ConstPack<Unsigned<N, T>, ConstPack<L, R> >(lhs, rhs);
+}
+
+template<int N, typename T, int M>
+ConstPack<Signed<N, T>, void (*)(detail::Reserved<M>*)> operator , (const Signed<N, T>& lhs, void (*rhs)(detail::Reserved<M>*))
+{
+    return ConstPack<Signed<N, T>, void (*)(detail::Reserved<M>*)>(lhs, rhs);
+}
+
+template<int N, typename T, int M>
+ConstPack<Unsigned<N, T>, void (*)(detail::Reserved<M>*)> operator , (const Unsigned<N, T>& lhs, void (*rhs)(detail::Reserved<M>*))
+{
+    return ConstPack<Unsigned<N, T>, void (*)(detail::Reserved<M>*)>(lhs, rhs);
 }
 
 template<int N> void reserve(detail::Reserved<N>*) {}
