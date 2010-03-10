@@ -468,6 +468,7 @@ TEST(SizeTest, Test4)
     ASSERT_EQ(sizeof(int), sizeof(bits1, bits::reserve<30>).getSequence());
 }
 
+// 境界テスト：charをコンテナ型にした場合に符号付き8ビットの値を格納できること
 TEST(BoundaryTest, SignedTest1)
 {
     bits::Signed<8, char> s8;
@@ -486,6 +487,7 @@ TEST(BoundaryTest, SignedTest1)
     ASSERT_EQ(0, static_cast<int>(s8));
 }
 
+// 境界テスト：shortをコンテナ型にした場合に符号付き16ビットの値を格納できること
 TEST(BoundaryTest, SignedTest2)
 {
     bits::Signed<16, short> s16;
@@ -504,6 +506,7 @@ TEST(BoundaryTest, SignedTest2)
     ASSERT_EQ(0, static_cast<int>(s16));
 }
 
+// 境界テスト：intをコンテナ型にした場合に符号付き32ビットの値を格納できること
 TEST(BoundaryTest, SignedTest3)
 {
     bits::Signed<32, int> s32;
@@ -522,6 +525,7 @@ TEST(BoundaryTest, SignedTest3)
     ASSERT_EQ(0, static_cast<int>(s32));
 }
 
+// 境界テスト：longをコンテナ型にした場合に符号付き32ビットの値を格納できること
 TEST(BoundaryTest, SignedTest4)
 {
     bits::Signed<32, long> s32;
@@ -540,6 +544,7 @@ TEST(BoundaryTest, SignedTest4)
     ASSERT_EQ(0, static_cast<int>(s32));
 }
 
+// 境界テスト：charをコンテナ型にした場合に符号なし8ビットの値を格納できること
 TEST(BoundaryTest, UnsignedTest1)
 {
     bits::Unsigned<8, char> u8;
@@ -558,6 +563,7 @@ TEST(BoundaryTest, UnsignedTest1)
     ASSERT_EQ(0u, static_cast<unsigned int>(u8));
 }
 
+// 境界テスト：shortをコンテナ型にした場合に符号なし16ビットの値を格納できること
 TEST(BoundaryTest, UnsignedTest2)
 {
     bits::Unsigned<16, short> u16;
@@ -576,6 +582,7 @@ TEST(BoundaryTest, UnsignedTest2)
     ASSERT_EQ(0u, static_cast<unsigned int>(u16));
 }
 
+// 境界テスト：intをコンテナ型にした場合に符号なし32ビットの値を格納できること
 TEST(BoundaryTest, UnsignedTest3)
 {
     bits::Unsigned<32, int> u32;
@@ -594,6 +601,7 @@ TEST(BoundaryTest, UnsignedTest3)
     ASSERT_EQ(0u, static_cast<unsigned int>(u32));
 }
 
+// 境界テスト：longをコンテナ型にした場合に符号なし32ビットの値を格納できること
 TEST(BoundaryTest, UnsignedTest4)
 {
     bits::Unsigned<32, long> u32;
@@ -610,6 +618,18 @@ TEST(BoundaryTest, UnsignedTest4)
 
     u32 = 0u;
     ASSERT_EQ(0u, static_cast<unsigned int>(u32));
+}
+
+// 汚染テスト：operator , が他の型に影響を与えないこと
+using namespace emattsan::bits;
+struct Foo {};
+TEST(ContaminationTest, Test1)
+{
+    Foo a;
+    Foo b;
+    Foo c;
+    
+    c = (a, b);
 }
 
 // entry point
