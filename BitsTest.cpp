@@ -437,11 +437,11 @@ TEST(SizeTest, Test2)
 {
     bits::Signed<4, char> bits1;
 
-    ASSERT_EQ(sizeof(char), sizeof(bits1, bits1).getSequence());
-    ASSERT_EQ(sizeof(short), sizeof(bits1, bits1, bits1).getSequence());
-    ASSERT_EQ(sizeof(short), sizeof(bits1, bits1, bits1).getSequence());
-    ASSERT_EQ(sizeof(short), sizeof(bits1, bits1, bits1, bits1).getSequence());
-    ASSERT_EQ(sizeof(int), sizeof(bits1, bits1, bits1, bits1, bits1).getSequence());
+    ASSERT_EQ(sizeof(char), sizeof((bits1, bits1).getSequence()));
+    ASSERT_EQ(sizeof(short), sizeof((bits1, bits1, bits1).getSequence()));
+    ASSERT_EQ(sizeof(short), sizeof((bits1, bits1, bits1).getSequence()));
+    ASSERT_EQ(sizeof(short), sizeof((bits1, bits1, bits1, bits1).getSequence()));
+    ASSERT_EQ(sizeof(int), sizeof((bits1, bits1, bits1, bits1, bits1).getSequence()));
 }
 
 // 連結したビット列の値の型が、その値を格納できる最小の整数型になっていること（２）
