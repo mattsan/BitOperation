@@ -114,39 +114,83 @@ template<int N> struct Reserved;
 template<typename LHS, typename RHS> class Pack;
 template<typename LHS, typename RHS> class ConstPack;
 
-template<int SIZE, typename T = unsigned int>
-class Signed
+template<int SIZE, typename T, typename VALUE, typename VALUE_TYPE>
+class Base
 {
 public:
+    typedef VALUE Value;
+
     typedef typename detail::Traits<T>::signed_value_type   signed_value_type;
     typedef typename detail::Traits<T>::unsigned_value_type unsigned_value_type;
-    typedef typename detail::Traits<T>::signed_value_type   value_type;
+    typedef VALUE_TYPE                      value_type;
 
     static const int                 Size = SIZE;
     static const unsigned_value_type Mask = detail::Mask<unsigned_value_type, Size>::value;
-
-    Signed() : value_(0)
-    {
-    }
-
-    explicit Signed(value_type n) : value_(trim(n))
-    {
-    }
 
     static int size()
     {
         return Size;
     }
 
-    Signed& set(signed_value_type n)
+    Value& set(value_type n)
     {
-        value_ = trim(n);
-        return *this;
+        self().value_ = self().trim(n);
+        return self();
     }
 
-    signed_value_type get() const
+    value_type get() const
     {
-        return value_;
+        return self().value_;
+    }
+
+    operator value_type () const
+    {
+        return get();
+    }
+
+    void setSequence(unsigned_value_type value)
+    {
+        self().value_ = self().trim(value);
+    }
+
+    unsigned_value_type getSequence() const
+    {
+        return static_cast<unsigned_value_type>(self().value_) & Mask;
+    };
+
+protected:
+    Base()
+    {
+    }
+
+private:
+    Value& self()
+    {
+        return static_cast<Value&>(*this);
+    }
+
+    const Value& self() const
+    {
+        return static_cast<const Value&>(*this);
+    }
+};
+
+template<int SIZE, typename T = unsigned int>
+class Signed : public Base<SIZE, T, Signed<SIZE, T>, typename detail::Traits<T>::signed_value_type>
+{
+public:
+    typedef Base<SIZE, T, Signed<SIZE, T>, typename detail::Traits<T>::signed_value_type> super;
+
+    typedef typename super::signed_value_type   signed_value_type;
+    typedef typename super::unsigned_value_type unsigned_value_type;
+    typedef typename super::value_type          value_type;
+
+    Signed() : super(), value_(0)
+    {
+    }
+
+    explicit Signed(value_type n) : super(), value_(trim(n))
+    {
     }
 
     Signed& operator = (signed_value_type n)
@@ -154,95 +198,52 @@ public:
         return set(n);
     }
 
-    operator signed_value_type () const
-    {
-        return get();
-    }
-
-    void setSequence(unsigned_value_type value)
-    {
-        value_ = trim(value);
-    }
-
-    unsigned_value_type getSequence() const
-    {
-        return static_cast<unsigned_value_type>(value_) & Mask;
-    };
-
 private:
-    value_type trim(value_type n)
+    static value_type trim(value_type n)
     {
-        n <<= (std::numeric_limits<unsigned_value_type>::digits - Size);
-        n >>= (std::numeric_limits<unsigned_value_type>::digits - Size);
+        n <<= (std::numeric_limits<unsigned_value_type>::digits - super::Size);
+        n >>= (std::numeric_limits<unsigned_value_type>::digits - super::Size);
         return n;
     }
 
     value_type value_;
+
+    friend class Base<SIZE, T, Signed<SIZE, T>, typename detail::Traits<T>::signed_value_type>;
 };
 
-template<int SIZE, typename T = unsigned long>
-class Unsigned
+template<int SIZE, typename T = unsigned int>
+class Unsigned : public Base<SIZE, T, Unsigned<SIZE, T>, typename detail::Traits<T>::unsigned_value_type>
 {
 public:
-    typedef typename detail::Traits<T>::signed_value_type   signed_value_type;
-    typedef typename detail::Traits<T>::unsigned_value_type unsigned_value_type;
-    typedef typename detail::Traits<T>::unsigned_value_type value_type;
+    typedef Base<SIZE, T, Unsigned<SIZE, T>, typename detail::Traits<T>::unsigned_value_type> super;
 
-    static const int                 Size = SIZE;
-    static const unsigned_value_type Mask = detail::Mask<unsigned_value_type, Size>::value;
+    typedef typename super::signed_value_type   signed_value_type;
+    typedef typename super::unsigned_value_type unsigned_value_type;
+    typedef typename super::value_type          value_type;
 
-    Unsigned() : value_(0)
+    Unsigned() : super(), value_(0)
     {
     }
 
-    explicit Unsigned(value_type n) : value_(trim(n))
+    explicit Unsigned(value_type n) : super(), value_(trim(n))
     {
     }
 
-    static int size()
-    {
-        return Size;
-    }
-
-    Unsigned& set(unsigned_value_type n)
-    {
-        value_ = trim(n);
-        return *this;
-    }
-
-    unsigned_value_type get() const
-    {
-        return value_;
-    }
-
-    Unsigned& operator = (unsigned_value_type n)
+    Unsigned& operator = (value_type n)
     {
         return set(n);
     }
 
-    operator unsigned_value_type () const
-    {
-        return get();
-    }
-
-    void setSequence(unsigned_value_type value)
-    {
-        value_ = trim(value);
-    }
-
-    unsigned_value_type getSequence() const
-    {
-        return value_;
-    };
-
 private:
-    value_type trim(value_type n)
+    static value_type trim(value_type n)
     {
-        n &= Mask;
+        n &= super::Mask;
         return n;
     }
 
     value_type value_;
+
+    friend class Base<SIZE, T, Unsigned<SIZE, T>, typename detail::Traits<T>::unsigned_value_type>;
 };
 
 template<typename LHS, typename RHS>
