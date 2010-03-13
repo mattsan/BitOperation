@@ -107,18 +107,11 @@ struct Mask
     static const T value = _<N, N < std::numeric_limits<T>::digits>::value;
 };
 
-template<int N> struct Reserved;
-
-} // namespace detail
-
-template<typename LHS, typename RHS> class Pack;
-template<typename LHS, typename RHS> class ConstPack;
-
-template<int SIZE, typename T, typename VALUE, typename VALUE_TYPE>
+template<int SIZE, typename T, typename BITS, typename VALUE_TYPE>
 class Base
 {
 public:
-    typedef VALUE Value;
+    typedef BITS Bits;
 
     typedef typename detail::Traits<T>::signed_value_type   signed_value_type;
     typedef typename detail::Traits<T>::unsigned_value_type unsigned_value_type;
@@ -132,7 +125,7 @@ public:
         return Size;
     }
 
-    Value& set(value_type n)
+    Bits& set(value_type n)
     {
         self().value_ = self().trim(n);
         return self();
@@ -164,22 +157,26 @@ protected:
     }
 
 private:
-    Value& self()
+    Bits& self()
     {
-        return static_cast<Value&>(*this);
+        return static_cast<Bits&>(*this);
     }
 
-    const Value& self() const
+    const Bits& self() const
     {
-        return static_cast<const Value&>(*this);
+        return static_cast<const Bits&>(*this);
     }
 };
 
+template<int N> struct Reserved;
+
+} // namespace detail
+
 template<int SIZE, typename T = unsigned int>
-class Signed : public Base<SIZE, T, Signed<SIZE, T>, typename detail::Traits<T>::signed_value_type>
+class Signed : public detail::Base<SIZE, T, Signed<SIZE, T>, typename detail::Traits<T>::signed_value_type>
 {
 public:
-    typedef Base<SIZE, T, Signed<SIZE, T>, typename detail::Traits<T>::signed_value_type> super;
+    typedef detail::Base<SIZE, T, Signed<SIZE, T>, typename detail::Traits<T>::signed_value_type> super;
 
     typedef typename super::signed_value_type   signed_value_type;
     typedef typename super::unsigned_value_type unsigned_value_type;
@@ -208,14 +205,14 @@ private:
 
     value_type value_;
 
-    friend class Base<SIZE, T, Signed<SIZE, T>, typename detail::Traits<T>::signed_value_type>;
+    friend class detail::Base<SIZE, T, Signed<SIZE, T>, typename detail::Traits<T>::signed_value_type>;
 };
 
 template<int SIZE, typename T = unsigned int>
-class Unsigned : public Base<SIZE, T, Unsigned<SIZE, T>, typename detail::Traits<T>::unsigned_value_type>
+class Unsigned : public detail::Base<SIZE, T, Unsigned<SIZE, T>, typename detail::Traits<T>::unsigned_value_type>
 {
 public:
-    typedef Base<SIZE, T, Unsigned<SIZE, T>, typename detail::Traits<T>::unsigned_value_type> super;
+    typedef detail::Base<SIZE, T, Unsigned<SIZE, T>, typename detail::Traits<T>::unsigned_value_type> super;
 
     typedef typename super::signed_value_type   signed_value_type;
     typedef typename super::unsigned_value_type unsigned_value_type;
@@ -243,8 +240,10 @@ private:
 
     value_type value_;
 
-    friend class Base<SIZE, T, Unsigned<SIZE, T>, typename detail::Traits<T>::unsigned_value_type>;
+    friend class detail::Base<SIZE, T, Unsigned<SIZE, T>, typename detail::Traits<T>::unsigned_value_type>;
 };
+
+template<typename LHS, typename RHS> class ConstPack;
 
 template<typename LHS, typename RHS>
 class Pack
