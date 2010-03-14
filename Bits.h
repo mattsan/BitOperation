@@ -9,6 +9,9 @@ namespace emattsan
 namespace bits
 {
 
+template<int SIZE, typename T> class Signed;
+template<int SIZE, typename T> class Unsigned;
+
 namespace detail
 {
 
@@ -107,6 +110,22 @@ struct Mask
     static const T value = _<N, N < std::numeric_limits<T>::digits>::value;
 };
 
+template<int L, int R>
+struct Max
+{
+    template <int L_, int R_, bool F> struct _       { static const int value = L_; };
+    template <int L_, int R_> struct _<L_, R_, true> { static const int value = R_; };
+
+    static const int value = _<L, R, (L < R)>::value;
+};
+
+template<int N, int M>
+struct Greater
+{
+    typedef Signed<detail::Max<N, M>::value, typename detail::Width<detail::Max<N, M>::value>::value_type>   signed_type;
+    typedef Unsigned<detail::Max<N, M>::value, typename detail::Width<detail::Max<N, M>::value>::value_type> unsigned_type;
+};
+
 template<int SIZE, typename T, typename BITS, typename VALUE_TYPE>
 class Base
 {
@@ -190,9 +209,39 @@ public:
     {
     }
 
-    Signed& operator = (signed_value_type n)
+    template<int M, typename U>
+    Signed(const Signed<M, U>& bits) : super(), value_(trim(bits.get()))
+    {
+    }
+
+    template<int M, typename U>
+    Signed(const Unsigned<M, U>& bits) : super(), value_(trim(bits.get()))
+    {
+    }
+
+    Signed& operator = (value_type n)
     {
         return set(n);
+    }
+
+    Signed& operator += (value_type n)
+    {
+        return set(value_ + n);
+    }
+
+    Signed& operator -= (value_type n)
+    {
+        return set(value_ - n);
+    }
+
+    Signed& operator *= (value_type n)
+    {
+        return set(value_ * n);
+    }
+
+    Signed& operator /= (value_type n)
+    {
+        return set(value_ / n);
     }
 
 private:
@@ -226,9 +275,39 @@ public:
     {
     }
 
+    template<int M, typename U>
+    Unsigned(const Signed<M, U>& bits) : super(), value_(trim(bits.get()))
+    {
+    }
+
+    template<int M, typename U>
+    Unsigned(const Unsigned<M, U>& bits) : super(), value_(trim(bits.get()))
+    {
+    }
+
     Unsigned& operator = (value_type n)
     {
         return set(n);
+    }
+
+    Unsigned& operator += (value_type n)
+    {
+        return set(value_ + n);
+    }
+
+    Unsigned& operator -= (value_type n)
+    {
+        return set(value_ - n);
+    }
+
+    Unsigned& operator *= (value_type n)
+    {
+        return set(value_ * n);
+    }
+
+    Unsigned& operator /= (value_type n)
+    {
+        return set(value_ / n);
     }
 
 private:
@@ -549,6 +628,39 @@ public:
 private:
     const LHS& lhs_;
 };
+
+#define DEFINE_OP(op) \
+template<int N, typename T, int M, typename U> inline typename detail::Greater<N, M>::signed_type operator op (const Signed<N, T>& lhs, const Signed<M, U>& rhs) \
+{ return typename detail::Greater<N, M>::signed_type(lhs.get() op rhs.get()); } \
+template<int N, typename T, int M, typename U> inline typename detail::Greater<N, M>::unsigned_type operator op (const Signed<N, T>& lhs, const Unsigned<M, U>& rhs) \
+{ return typename detail::Greater<N, M>::unsigned_type(lhs.get() op rhs.get()); } \
+template<int N, typename T, int M, typename U> inline typename detail::Greater<N, M>::unsigned_type operator op (const Unsigned<N, T>& lhs, const Signed<M, U>& rhs) \
+{ return typename detail::Greater<N, M>::unsigned_type(lhs.get() op rhs.get()); } \
+template<int N, typename T, int M, typename U> inline typename detail::Greater<N, M>::unsigned_type operator op (const Unsigned<N, T>& lhs, const Unsigned<M, U>& rhs) \
+{ return typename detail::Greater<N, M>::unsigned_type(lhs.get() op rhs.get()); } \
+template<int N, typename T> inline Signed<N, T> operator op (const Signed<N, T>& lhs, typename Signed<N, T>::signed_value_type rhs) \
+{ return lhs op Signed<N, T>(rhs); } \
+template<int N, typename T> inline Signed<N, T> operator op (typename Signed<N, T>::signed_value_type lhs, const Signed<N, T>& rhs) \
+{ return Signed<N, T>(lhs) op rhs; } \
+template<int N, typename T> inline Unsigned<N, T> operator op (const Signed<N, T>& lhs, typename Signed<N, T>::unsigned_value_type rhs) \
+{ return lhs op Unsigned<N, T>(rhs); } \
+template<int N, typename T> inline Unsigned<N, T> operator op (typename Signed<N, T>::unsigned_value_type lhs, const Signed<N, T>& rhs) \
+{ return Unsigned<N, T>(lhs) op rhs; } \
+template<int N, typename T> inline Unsigned<N, T> operator op (const Unsigned<N, T>& lhs, typename Unsigned<N, T>::signed_value_type rhs) \
+{ return lhs op Signed<N, T>(rhs); } \
+template<int N, typename T> inline Unsigned<N, T> operator op (typename Unsigned<N, T>::signed_value_type lhs, const Unsigned<N, T>& rhs) \
+{ return Signed<N, T>(lhs) op rhs; } \
+template<int N, typename T> inline Unsigned<N, T> operator op (const Unsigned<N, T>& lhs, typename Unsigned<N, T>::unsigned_value_type rhs) \
+{ return lhs op Unsigned<N, T>(rhs); } \
+template<int N, typename T> inline Unsigned<N, T> operator op (typename Unsigned<N, T>::unsigned_value_type lhs, const Unsigned<N, T>& rhs) \
+{ return Unsigned<N, T>(lhs) op rhs; }
+
+DEFINE_OP(+)
+DEFINE_OP(-)
+DEFINE_OP(*)
+DEFINE_OP(/)
+
+#undef DEFINE_OP
 
 template<int N, typename T, int M, typename U>
 Pack<Signed<N, T>, Signed<M, U> > operator , (Signed<N, T>& lhs, Signed<M, U>& rhs)
