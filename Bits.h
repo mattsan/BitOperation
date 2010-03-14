@@ -244,6 +244,28 @@ public:
         return set(value_ / n);
     }
 
+    Signed& operator <<= (int n)
+    {
+        value_ = trim(value_ << n);
+        return *this;
+    }
+
+    Signed& operator >>= (int n)
+    {
+        value_ = trim(value_ >> n);
+        return *this;
+    }
+
+    friend inline Signed operator << (const Signed& lhs, int rhs)
+    {
+        return Signed(lhs.value_ << rhs);
+    }
+
+    friend inline Signed operator >> (const Signed& lhs, int rhs)
+    {
+        return Signed(lhs.value_ >> rhs);
+    }
+
 private:
     static value_type trim(value_type n)
     {
@@ -308,6 +330,28 @@ public:
     Unsigned& operator /= (value_type n)
     {
         return set(value_ / n);
+    }
+
+    Unsigned& operator <<= (int n)
+    {
+        value_ = trim(value_ << n);
+        return *this;
+    }
+
+    Unsigned& operator >>= (int n)
+    {
+        value_ = trim(value_ >> n);
+        return *this;
+    }
+
+    friend inline Unsigned operator << (const Unsigned& lhs, int rhs)
+    {
+        return Unsigned(lhs.value_ << rhs);
+    }
+
+    friend inline Unsigned operator >> (const Unsigned& lhs, int rhs)
+    {
+        return Unsigned(lhs.value_ >> rhs);
     }
 
 private:

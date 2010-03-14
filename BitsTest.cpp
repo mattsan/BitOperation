@@ -1184,6 +1184,132 @@ TEST(CalcTest, DivTest6)
     ASSERT_EQ(1, static_cast<int>(_5u / u4));
 }
 
+TEST(ShiftTest, SignedLeftShiftTest)
+{
+    bits::Signed<6> s6(31);
+    ASSERT_EQ(31, static_cast<int>(s6));
+
+    ASSERT_EQ(6, (s6 << 1).size());
+    ASSERT_EQ(-2, static_cast<int>(s6 << 1));
+    s6 <<= 1;
+    ASSERT_EQ(-2, static_cast<int>(s6));
+
+    ASSERT_EQ(6, (s6 << 2).size());
+    ASSERT_EQ(-8, static_cast<int>(s6 << 2));
+    s6 <<= 2;
+    ASSERT_EQ(-8, static_cast<int>(s6));
+
+    ASSERT_EQ(6, (s6 << 3).size());
+    ASSERT_EQ(0, static_cast<int>(s6 << 3));
+    s6 <<= 3;
+    ASSERT_EQ(0, static_cast<int>(s6));
+}
+
+TEST(ShiftTest, SignedRightShiftTest1)
+{
+    bits::Signed<6> s6(31);
+    ASSERT_EQ(31, static_cast<int>(s6));
+
+    ASSERT_EQ(6, (s6 >> 1).size());
+    ASSERT_EQ(15, static_cast<int>(s6 >> 1));
+    s6 >>= 1;
+    ASSERT_EQ(15, static_cast<int>(s6));
+
+    ASSERT_EQ(6, (s6 >> 2).size());
+    ASSERT_EQ(3, static_cast<int>(s6 >> 2));
+    s6 >>= 2;
+    ASSERT_EQ(3, static_cast<int>(s6));
+
+    ASSERT_EQ(6, (s6 >> 3).size());
+    ASSERT_EQ(0, static_cast<int>(s6 >> 3));
+    s6 >>= 3;
+    ASSERT_EQ(0, static_cast<int>(s6));
+}
+
+TEST(ShiftTest, SignedRightShiftTest2)
+{
+    bits::Signed<6> s6(-32);
+    ASSERT_EQ(-32, static_cast<int>(s6));
+
+    ASSERT_EQ(6, (s6 >> 1).size());
+    ASSERT_EQ(-16, static_cast<int>(s6 >> 1));
+    s6 >>= 1;
+    ASSERT_EQ(-16, static_cast<int>(s6));
+
+    ASSERT_EQ(6, (s6 >> 2).size());
+    ASSERT_EQ(-4, static_cast<int>(s6 >> 2));
+    s6 >>= 2;
+    ASSERT_EQ(-4, static_cast<int>(s6));
+
+    ASSERT_EQ(6, (s6 >> 3).size());
+    ASSERT_EQ(-1, static_cast<int>(s6 >> 3));
+    s6 >>= 3;
+    ASSERT_EQ(-1, static_cast<int>(s6));
+}
+
+TEST(ShiftTest, UnsignedLeftShiftTest)
+{
+    bits::Unsigned<6> u6(31);
+    ASSERT_EQ(31, static_cast<int>(u6));
+
+    ASSERT_EQ(6, (u6 << 1).size());
+    ASSERT_EQ(62, static_cast<int>(u6 << 1));
+    u6 <<= 1;
+    ASSERT_EQ(62, static_cast<int>(u6));
+
+    ASSERT_EQ(6, (u6 << 2).size());
+    ASSERT_EQ(56, static_cast<int>(u6 << 2));
+    u6 <<= 2;
+    ASSERT_EQ(56, static_cast<int>(u6));
+
+    ASSERT_EQ(6, (u6 << 3).size());
+    ASSERT_EQ(0, static_cast<int>(u6 << 3));
+    u6 <<= 3;
+    ASSERT_EQ(0, static_cast<int>(u6));
+}
+
+TEST(ShiftTest, UnsignedRightShiftTest1)
+{
+    bits::Unsigned<6> u6(31);
+    ASSERT_EQ(31, static_cast<int>(u6));
+
+    ASSERT_EQ(6, (u6 >> 1).size());
+    ASSERT_EQ(15, static_cast<int>(u6 >> 1));
+    u6 >>= 1;
+    ASSERT_EQ(15, static_cast<int>(u6));
+
+    ASSERT_EQ(6, (u6 >> 2).size());
+    ASSERT_EQ(3, static_cast<int>(u6 >> 2));
+    u6 >>= 2;
+    ASSERT_EQ(3, static_cast<int>(u6));
+
+    ASSERT_EQ(6, (u6 >> 3).size());
+    ASSERT_EQ(0, static_cast<int>(u6 >> 3));
+    u6 >>= 3;
+    ASSERT_EQ(0, static_cast<int>(u6));
+}
+
+TEST(ShiftTest, UnsignedRightShiftTest2)
+{
+    bits::Unsigned<6> u6(32);
+    ASSERT_EQ(32, static_cast<int>(u6));
+
+    ASSERT_EQ(6, (u6 >> 1).size());
+    ASSERT_EQ(16, static_cast<int>(u6 >> 1));
+    u6 >>= 1;
+    ASSERT_EQ(16, static_cast<int>(u6));
+
+    ASSERT_EQ(6, (u6 >> 2).size());
+    ASSERT_EQ(4, static_cast<int>(u6 >> 2));
+    u6 >>= 2;
+    ASSERT_EQ(4, static_cast<int>(u6));
+
+    ASSERT_EQ(6, (u6 >> 3).size());
+    ASSERT_EQ(0, static_cast<int>(u6 >> 3));
+    u6 >>= 3;
+    ASSERT_EQ(0, static_cast<int>(u6));
+}
+
 // 汚染テスト：operator , が他の型に影響を与えないこと
 using namespace emattsan::bits;
 struct Foo {};
