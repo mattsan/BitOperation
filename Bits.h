@@ -410,6 +410,16 @@ public:
         return set(super::value_ / n);
     }
 
+    Bits& operator |= (value_type n)
+    {
+        return set(super::value_ | n);
+    }
+
+    Bits& operator &= (value_type n)
+    {
+        return set(super::value_ & n);
+    }
+
     Bits& operator <<= (int n)
     {
         super::value_ = trim(super::value_ << n);
@@ -457,6 +467,12 @@ public:
     Pack& operator = (value_type value)
     {
         setSequence(value);
+        return *this;
+    }
+
+    Pack& operator = (const Pack& value)
+    {
+        setSequence(value.getSequence());
         return *this;
     }
 
@@ -572,6 +588,8 @@ DEFINE_OP(+)
 DEFINE_OP(-)
 DEFINE_OP(*)
 DEFINE_OP(/)
+DEFINE_OP(|)
+DEFINE_OP(&)
 
 #undef DEFINE_OP
 
