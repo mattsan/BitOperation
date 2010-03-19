@@ -385,6 +385,42 @@ public:
         return get();
     }
 
+    const Bits& operator + () const
+    {
+        return *this;
+    }
+
+    Bits operator - () const
+    {
+        return Bits(-super::value_);
+    }
+
+    Bits& operator ++ ()
+    {
+        *this += 1;
+        return *this;
+    }
+
+    Bits operator ++ (int)
+    {
+        Bits result(*this);
+        ++*this;
+        return result;
+    }
+
+    Bits& operator -- ()
+    {
+        *this -= 1;
+        return *this;
+    }
+
+    Bits operator -- (int)
+    {
+        Bits result(*this);
+        --*this;
+        return result;
+    }
+
     Bits& operator = (value_type n)
     {
         return set(n);

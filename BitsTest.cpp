@@ -1825,6 +1825,138 @@ TEST(AssignmentTest, DifferentSizeTest3)
     ASSERT_EQ(0x561, static_cast<int>(f));
 }
 
+TEST(SignTest, SignedTest)
+{
+    Bits<4, signed> s4(7);
+
+    ASSERT_EQ(7, static_cast<int>(s4));
+    ASSERT_EQ(4, (+s4).size());
+    ASSERT_EQ(4, (-s4).size());
+    ASSERT_EQ(7, static_cast<int>(+s4));
+    ASSERT_EQ(-7, static_cast<int>(-s4));
+
+    s4 = -8;
+    ASSERT_EQ(-8, static_cast<int>(s4));
+    ASSERT_EQ(4, (+s4).size());
+    ASSERT_EQ(4, (-s4).size());
+    ASSERT_EQ(-8, static_cast<int>(+s4));
+    ASSERT_EQ(-8, static_cast<int>(-s4));
+}
+
+TEST(SignTest, UnsignedTest)
+{
+    Bits<4> u4(7);
+
+    ASSERT_EQ(7, static_cast<int>(u4));
+    ASSERT_EQ(4, (+u4).size());
+    ASSERT_EQ(4, (-u4).size());
+    ASSERT_EQ(7, static_cast<int>(+u4));
+    ASSERT_EQ(9, static_cast<int>(-u4));
+
+    u4 = 8;
+    ASSERT_EQ(8, static_cast<int>(u4));
+    ASSERT_EQ(4, (+u4).size());
+    ASSERT_EQ(4, (-u4).size());
+    ASSERT_EQ(8, static_cast<int>(+u4));
+    ASSERT_EQ(8, static_cast<int>(-u4));
+}
+
+TEST(IncTest, SignedTest)
+{
+    Bits<3, signed> s3;
+    ASSERT_EQ(1, ++s3);
+    ASSERT_EQ(2, ++s3);
+    ASSERT_EQ(3, ++s3);
+    ASSERT_EQ(-4, ++s3);
+    ASSERT_EQ(-3, ++s3);
+    ASSERT_EQ(-2, ++s3);
+    ASSERT_EQ(-1, ++s3);
+    ASSERT_EQ(0, ++s3);
+
+    s3 = 0;
+    ASSERT_EQ(0, s3++);
+    ASSERT_EQ(1, s3++);
+    ASSERT_EQ(2, s3++);
+    ASSERT_EQ(3, s3++);
+    ASSERT_EQ(-4, s3++);
+    ASSERT_EQ(-3, s3++);
+    ASSERT_EQ(-2, s3++);
+    ASSERT_EQ(-1, s3++);
+    ASSERT_EQ(0, s3);
+}
+
+TEST(IncTest, UnsignedTest)
+{
+    Bits<3> u3;
+    ASSERT_EQ(1, ++u3);
+    ASSERT_EQ(2, ++u3);
+    ASSERT_EQ(3, ++u3);
+    ASSERT_EQ(4, ++u3);
+    ASSERT_EQ(5, ++u3);
+    ASSERT_EQ(6, ++u3);
+    ASSERT_EQ(7, ++u3);
+    ASSERT_EQ(0, ++u3);
+
+    u3 = 0;
+    ASSERT_EQ(0, u3++);
+    ASSERT_EQ(1, u3++);
+    ASSERT_EQ(2, u3++);
+    ASSERT_EQ(3, u3++);
+    ASSERT_EQ(4, u3++);
+    ASSERT_EQ(5, u3++);
+    ASSERT_EQ(6, u3++);
+    ASSERT_EQ(7, u3++);
+    ASSERT_EQ(0, u3);
+}
+
+TEST(DecTest, SignedTests)
+{
+    Bits<3, signed> s3;
+    ASSERT_EQ(-1, --s3);
+    ASSERT_EQ(-2, --s3);
+    ASSERT_EQ(-3, --s3);
+    ASSERT_EQ(-4, --s3);
+    ASSERT_EQ(3, --s3);
+    ASSERT_EQ(2, --s3);
+    ASSERT_EQ(1, --s3);
+    ASSERT_EQ(0, --s3);
+
+    s3 = 0;
+    ASSERT_EQ(0, s3--);
+    ASSERT_EQ(-1, s3--);
+    ASSERT_EQ(-2, s3--);
+    ASSERT_EQ(-3, s3--);
+    ASSERT_EQ(-4, s3--);
+    ASSERT_EQ(3, s3--);
+    ASSERT_EQ(2, s3--);
+    ASSERT_EQ(1, s3--);
+    ASSERT_EQ(0, s3--);
+}
+
+TEST(DecTest, UnsignedTest)
+{
+    Bits<3> u3;
+    ASSERT_EQ(7, --u3);
+    ASSERT_EQ(6, --u3);
+    ASSERT_EQ(5, --u3);
+    ASSERT_EQ(4, --u3);
+    ASSERT_EQ(3, --u3);
+    ASSERT_EQ(2, --u3);
+    ASSERT_EQ(1, --u3);
+    ASSERT_EQ(0, --u3);
+
+    u3 = 0;
+    ASSERT_EQ(0, u3--);
+    ASSERT_EQ(7, u3--);
+    ASSERT_EQ(6, u3--);
+    ASSERT_EQ(5, u3--);
+    ASSERT_EQ(4, u3--);
+    ASSERT_EQ(3, u3--);
+    ASSERT_EQ(2, u3--);
+    ASSERT_EQ(1, u3--);
+    ASSERT_EQ(0, u3--);
+}
+
 // 汚染テスト：operator , が他の型に影響を与えないこと
 struct Foo {};
 TEST(ContaminationTest, Test1)
