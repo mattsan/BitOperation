@@ -14,8 +14,9 @@ template<int SIZE, typename T> class Bits;
 namespace detail
 {
 
-struct Signed;
-struct Unsigned;
+struct Signed;   // only declaration; used template parameter for expressing number signed
+struct Unsigned; // only declaration; used template parameter for expressing number unsigned
+template<int N> struct Reserved; // only declaration; used expressing reserved bits size
 
 template<typename T> struct Traits;
 
@@ -25,6 +26,8 @@ template<> struct Traits<signed char>
     typedef unsigned char unsigned_value_type;
     typedef signed char   value_type;
     typedef Signed        sign_type;
+
+    static const unsigned int Size = std::numeric_limits<unsigned char>::digits;
 };
 
 template<> struct Traits<unsigned char>
@@ -33,6 +36,8 @@ template<> struct Traits<unsigned char>
     typedef unsigned char unsigned_value_type;
     typedef unsigned char value_type;
     typedef Unsigned      sign_type;
+
+    static const unsigned int Size = std::numeric_limits<unsigned char>::digits;
 };
 
 template<> struct Traits<signed short>
@@ -41,6 +46,8 @@ template<> struct Traits<signed short>
     typedef unsigned short unsigned_value_type;
     typedef signed short   value_type;
     typedef Signed        sign_type;
+
+    static const unsigned int Size = std::numeric_limits<unsigned short>::digits;
 };
 
 template<> struct Traits<unsigned short>
@@ -49,6 +56,8 @@ template<> struct Traits<unsigned short>
     typedef unsigned short unsigned_value_type;
     typedef unsigned short value_type;
     typedef Unsigned       sign_type;
+
+    static const unsigned int Size = std::numeric_limits<unsigned short>::digits;
 };
 
 template<> struct Traits<signed int>
@@ -57,6 +66,8 @@ template<> struct Traits<signed int>
     typedef unsigned int unsigned_value_type;
     typedef signed int   value_type;
     typedef Signed        sign_type;
+
+    static const unsigned int Size = std::numeric_limits<unsigned int>::digits;
 };
 
 template<> struct Traits<unsigned int>
@@ -65,6 +76,8 @@ template<> struct Traits<unsigned int>
     typedef unsigned int unsigned_value_type;
     typedef unsigned int value_type;
     typedef Unsigned     sign_type;
+
+    static const unsigned int Size = std::numeric_limits<unsigned int>::digits;
 };
 
 template<> struct Traits<signed long>
@@ -73,6 +86,8 @@ template<> struct Traits<signed long>
     typedef unsigned long unsigned_value_type;
     typedef signed long   value_type;
     typedef Signed        sign_type;
+
+    static const unsigned int Size = std::numeric_limits<unsigned long>::digits;
 };
 
 template<> struct Traits<unsigned long>
@@ -81,6 +96,8 @@ template<> struct Traits<unsigned long>
     typedef unsigned long unsigned_value_type;
     typedef unsigned long value_type;
     typedef Unsigned      sign_type;
+
+    static const unsigned int Size = std::numeric_limits<unsigned long>::digits;
 };
 
 template<int N>
@@ -118,10 +135,10 @@ struct Width
         typedef Traits<unsigned int>::unsigned_value_type value_type;
     };
 
-     typedef _< (N <= std::numeric_limits<unsigned char>::digits),
-                (N <= std::numeric_limits<unsigned short>::digits),
-                (N <= std::numeric_limits<unsigned int>::digits),
-                (N <= std::numeric_limits<unsigned long>::digits)
+     typedef _< (N <= Traits<unsigned char>::Size),
+                (N <= Traits<unsigned short>::Size),
+                (N <= Traits<unsigned int>::Size),
+                (N <= Traits<unsigned long>::Size)
               > type;
 
     typedef typename type::signed_value_type   signed_value_type;
@@ -132,19 +149,32 @@ struct Width
 template<typename T, int N>
 struct Mask
 {
-    template<int M, bool F>
+    // only declaration; for error message when invalid template parameter is used
+    struct ERROR__INVALID_Bits_SIZE__ONLY_CAN_USE_FROM_ONE_TO_CONTAINER_DIGIT_SIZE;
+
+    template<int M, bool GREATER_THAN_ZERO, bool LESS_THAN_M, bool EQUAL_M>
     struct _
+    {
+        static const T value = ERROR__INVALID_Bits_SIZE__ONLY_CAN_USE_FROM_ONE_TO_CONTAINER_DIGIT_SIZE::value;
+    };
+
+    template<int M>
+    struct _<M, true, true, false>
     {
         static const T value = ((1u << M) - 1);
     };
 
     template<int M>
-    struct _<M, false>
+    struct _<M, true, false, true>
     {
         static const T value = static_cast<T>(-1);
     };
 
-    static const T value = _<N, N < std::numeric_limits<T>::digits>::value;
+    static const T value = _< N,
+                              0 < N,
+                              N < Traits<T>::Size,
+                              N == Traits<T>::Size
+                            >::value;
 };
 
 template<int L, int R>
@@ -167,7 +197,7 @@ public:
     typedef typename Traits<T>::value_type          value_type;
 
     static const int                 Size = SIZE;
-    static const unsigned_value_type Mask = Mask<unsigned_value_type, Size>::value;
+    static const unsigned_value_type Mask = Mask<value_type, Size>::value;
 
     BitsBase(value_type value) : value_(trim(value))
     {
@@ -175,8 +205,8 @@ public:
 
     static value_type trim(value_type n)
     {
-        n <<= (std::numeric_limits<unsigned_value_type>::digits - Size);
-        n >>= (std::numeric_limits<unsigned_value_type>::digits - Size);
+        n <<= (Traits<unsigned_value_type>::Size - Size);
+        n >>= (Traits<unsigned_value_type>::Size - Size);
         return n;
     }
 
@@ -192,7 +222,7 @@ public:
     typedef typename Traits<T>::value_type          value_type;
 
     static const int                 Size = SIZE;
-    static const unsigned_value_type Mask = Mask<unsigned_value_type, Size>::value;
+    static const unsigned_value_type Mask = Mask<value_type, Size>::value;
 
     BitsBase(value_type value) : value_(trim(value))
     {
@@ -206,28 +236,6 @@ public:
 
     value_type value_;
 };
-
-template<int N, int M, typename T, typename U>
-struct Result
-{
-    template<int N1, int N2, typename T1, typename T2>
-    struct _
-    {
-        static const int Size = Max<N1, N2>::value;
-        typedef Bits<Size, typename Width<Size>::unsigned_value_type> result_type;
-    };
-
-    template<int N1, int N2>
-    struct _<N1, N2, Signed, Signed>
-    {
-        static const int Size = Max<N1, N2>::value;
-        typedef Bits<Size, typename Width<Size>::signed_value_type> result_type;
-    };
-    
-    typedef typename _<N, M, typename Traits<T>::sign_type, typename Traits<U>::sign_type>::result_type result_type;
-};
-
-template<int N> struct Reserved;
 
 template<typename LHS, typename RHS>
 class PackBase
@@ -324,6 +332,26 @@ public:
 
 private:
     const LHS& lhs_;
+};
+
+template<int N, int M, typename T, typename U>
+struct Result
+{
+    template<int N1, int N2, typename T1, typename T2>
+    struct _
+    {
+        static const int Size = Max<N1, N2>::value;
+        typedef Bits<Size, typename Width<Size>::unsigned_value_type> result_type;
+    };
+
+    template<int N1, int N2>
+    struct _<N1, N2, Signed, Signed>
+    {
+        static const int Size = Max<N1, N2>::value;
+        typedef Bits<Size, typename Width<Size>::signed_value_type> result_type;
+    };
+    
+    typedef typename _<N, M, typename Traits<T>::sign_type, typename Traits<U>::sign_type>::result_type result_type;
 };
 
 } // namespace detail
