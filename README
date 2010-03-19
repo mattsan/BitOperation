@@ -9,8 +9,8 @@ from March 2, 2010
 
 1. Integer types of specified number of bits
 
-    Signed<4> s;   // signed 4 bit integer (-8..7)
-    Unsigned<4> u; // unsigned 4 bit integer (0..15)
+    Bits<4, signed> s; // signed 4 bit integer (-8..7)
+    Bits<4>         u; // (or Bits<4, unsigned>) unsigned 4 bit integer (0..15)
 
     s = 7;  // s => 7
     s = 8;  // s => -8
@@ -24,8 +24,8 @@ from March 2, 2010
 
 2. Join
 
-    Signed<4>   s(1); // s => 1 ( 0001b )
-    Unsigned<4> u(8); // u => 8 ( 1000b )
+    Bits<4, signed> s(1); // s => 1 ( 0001b )
+    BIts<4>         u(8); // u => 8 ( 1000b )
 
     int n = (s, u); // n => 24 ( 18h / 00011000b )
 
@@ -35,8 +35,8 @@ from March 2, 2010
 
 3. Reserved bits
 
-    Signed<4>   s(1); // s => 1 ( 0001b )
-    Unsigned<4> u(8); // u => 8 ( 1000b )
+    Bits<4, signed> s(1); // s => 1 ( 0001b )
+    Bits<4>         u(8); // u => 8 ( 1000b )
 
     int n = (s, reserve<2>, u); // n => 72 ( 048h / 0001001000b )
 
