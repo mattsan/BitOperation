@@ -229,6 +229,103 @@ struct Result
 
 template<int N> struct Reserved;
 
+template<typename LHS, typename RHS>
+class PackBase
+{
+public:
+    static const int Size = LHS::Size + RHS::Size;
+
+    typedef typename detail::Width<Size>::value_type value_type;
+
+    PackBase(LHS& lhs, RHS& rhs) : lhs_(lhs), rhs_(rhs)
+    {
+    }
+
+    void setSequence(value_type value)
+    {
+        rhs_.setSequence(value);
+        lhs_.setSequence(value >> RHS::Size);
+    }
+
+    value_type getSequence() const
+    {
+        return (lhs_.getSequence() << RHS::Size) | rhs_.getSequence();
+    }
+
+private:
+    LHS& lhs_;
+    RHS& rhs_;
+};
+
+template<typename LHS, int N>
+class PackBase<LHS, void (*)(detail::Reserved<N>*)>
+{
+public:
+    static const int Size = LHS::Size + N;
+
+    typedef typename detail::Width<Size>::value_type value_type;
+
+    PackBase(LHS& lhs, void (*)(detail::Reserved<N>*)) : lhs_(lhs)
+    {
+    }
+
+    void setSequence(value_type value)
+    {
+        lhs_.setSequence(value >> N);
+    }
+
+    value_type getSequence() const
+    {
+        return lhs_.getSequence() << N;
+    }
+
+private:
+    LHS& lhs_;
+};
+
+template<typename LHS, typename RHS>
+class ConstPackBase
+{
+public:
+    static const int Size = LHS::Size + RHS::Size;
+
+    typedef typename detail::Width<Size>::value_type value_type;
+
+    ConstPackBase(const LHS& lhs, const RHS& rhs) : lhs_(lhs), rhs_(rhs)
+    {
+    }
+
+    value_type getSequence() const
+    {
+        return (lhs_.getSequence() << RHS::Size) | rhs_.getSequence();
+    }
+
+private:
+    const LHS& lhs_;
+    const RHS& rhs_;
+};
+
+template<typename LHS, int N>
+class ConstPackBase<LHS, void (*)(detail::Reserved<N>*)>
+{
+public:
+    static const int Size = LHS::Size + N;
+
+    typedef typename detail::Width<Size>::value_type value_type;
+
+    ConstPackBase(const LHS& lhs, void (*)(detail::Reserved<N>*)) : lhs_(lhs)
+    {
+    }
+
+    value_type getSequence() const
+    {
+        return lhs_.getSequence() << N;
+    }
+
+private:
+    const LHS& lhs_;
+};
+
 } // namespace detail
 
 template<int SIZE, typename T = unsigned int>
@@ -339,31 +436,22 @@ public:
 template<typename LHS, typename RHS> class ConstPack;
 
 template<typename LHS, typename RHS>
-class Pack
+class Pack : public detail::PackBase<LHS, RHS>
 {
 public:
-    static const int Size = LHS::Size + RHS::Size;
+    typedef detail::PackBase<LHS, RHS> super;
 
-    typedef typename detail::Width<Size>::value_type value_type;
+    static const int Size = super::Size;
+
+    typedef typename super::value_type value_type;
 
     static int size()
     {
         return Size;
     }
 
-    Pack(LHS& lhs, RHS& rhs) : lhs_(lhs), rhs_(rhs)
+    Pack(LHS& lhs, RHS& rhs) : super(lhs, rhs)
     {
-    }
-
-    void setSequence(value_type value)
-    {
-        rhs_.setSequence(value);
-        lhs_.setSequence(value >> RHS::Size);
-    }
-
-    value_type getSequence() const
-    {
-        return (lhs_.getSequence() << RHS::Size) | rhs_.getSequence();
     }
 
     Pack& operator = (value_type value)
@@ -374,86 +462,7 @@ public:
 
     operator value_type () const
     {
-        return getSequence();
-    }
-
-    template<int M, typename U>
-    Pack<Pack, Bits<M, U> > operator , (Bits<M, U>& rhs)
-    {
-        return Pack<Pack, Bits<M, U> >(*this, rhs);
-    }
-
-    template<int N>
-    Pack<Pack, void (*)(detail::Reserved<N>*)> operator , (void (*rhs)(detail::Reserved<N>*))
-    {
-        return Pack<Pack, void (*)(detail::Reserved<N>*)>(*this, rhs);
-    }
-
-    template<int M, typename U>
-    ConstPack<Pack, Bits<M, U> > operator , (const Bits<M, U>& rhs) const
-    {
-        return ConstPack<Pack, Bits<M, U> >(*this, rhs);
-    }
-
-    template<typename L, typename R>
-    ConstPack<Pack, Pack<L, R> > operator , (const Pack<L, R>& rhs) const
-    {
-        return ConstPack<Pack, Pack<L, R> >(*this, rhs);
-    }
-
-    template<typename L, typename R>
-    ConstPack<Pack, ConstPack<L, R> > operator , (const ConstPack<L, R>& rhs) const
-    {
-        return ConstPack<Pack, ConstPack<L, R> >(*this, rhs);
-    }
-
-    template<int N>
-    ConstPack<Pack, void (*)(detail::Reserved<N>*)> operator , (void (*rhs)(detail::Reserved<N>*)) const
-    {
-        return ConstPack<Pack, void (*)(detail::Reserved<N>*)>(*this, rhs);
-    }
-
-private:
-    LHS& lhs_;
-    RHS& rhs_;
-};
-
-template<typename LHS, int N>
-class Pack<LHS, void (*)(detail::Reserved<N>*)>
-{
-public:
-    static const int Size = LHS::Size + N;
-
-    typedef typename detail::Width<Size>::value_type value_type;
-
-    static int size()
-    {
-        return Size;
-    }
-
-    Pack(LHS& lhs, void (*)(detail::Reserved<N>*)) : lhs_(lhs)
-    {
-    }
-
-    void setSequence(value_type value)
-    {
-        lhs_.setSequence(value >> N);
-    }
-
-    value_type getSequence() const
-    {
-        return lhs_.getSequence() << N;
-    }
-
-    Pack& operator = (value_type value)
-    {
-        setSequence(value);
-        return *this;
-    }
-
-    operator value_type () const
-    {
-        return getSequence();
+        return super::getSequence();
     }
 
     template<int M, typename U>
@@ -491,92 +500,30 @@ public:
     {
         return ConstPack<Pack, void (*)(detail::Reserved<M>*)>(*this, rhs);
     }
-
-private:
-    LHS& lhs_;
 };
 
 template<typename LHS, typename RHS>
-class ConstPack
+class ConstPack : public detail::ConstPackBase<LHS, RHS>
 {
 public:
-    static const int Size = LHS::Size + RHS::Size;
+    typedef detail::ConstPackBase<LHS, RHS> super;
 
-    typedef typename detail::Width<Size>::value_type value_type;
+    static const int Size = super::Size;
+
+    typedef typename super::value_type value_type;
 
     static int size()
     {
         return Size;
     }
 
-    ConstPack(const LHS& lhs, const RHS& rhs) : lhs_(lhs), rhs_(rhs)
+    ConstPack(const LHS& lhs, const RHS& rhs) : super(lhs, rhs)
     {
-    }
-
-    value_type getSequence() const
-    {
-        return (lhs_.getSequence() << RHS::Size) | rhs_.getSequence();
     }
 
     operator value_type () const
     {
-        return getSequence();
-    }
-
-    template<int M, typename U>
-    ConstPack<ConstPack, Bits<M, U> > operator , (const Bits<M, U>& rhs) const
-    {
-        return ConstPack<ConstPack, Bits<M, U> >(*this, rhs);
-    }
-
-    template<typename L, typename R>
-    ConstPack<ConstPack, Pack<L, R> > operator , (const Pack<L, R>& rhs) const
-    {
-        return ConstPack<ConstPack, Pack<L, R> >(*this, rhs);
-    }
-
-    template<typename L, typename R>
-    ConstPack<ConstPack, ConstPack<L, R> > operator , (const ConstPack<L, R>& rhs) const
-    {
-        return ConstPack<ConstPack, ConstPack<L, R> >(*this, rhs);
-    }
-
-    template<int N>
-    ConstPack<ConstPack, void (*)(detail::Reserved<N>*)> operator , (void (*rhs)(detail::Reserved<N>*)) const
-    {
-        return ConstPack<ConstPack, void (*)(detail::Reserved<N>*)>(*this, rhs);
-    }
-
-private:
-    const LHS& lhs_;
-    const RHS& rhs_;
-};
-
-template<typename LHS, int N>
-class ConstPack<LHS, void (*)(detail::Reserved<N>*)>
-{
-public:
-    static const int Size = LHS::Size + N;
-
-    typedef typename detail::Width<Size>::value_type value_type;
-
-    static int size()
-    {
-        return Size;
-    }
-
-    ConstPack(const LHS& lhs, void (*)(detail::Reserved<N>*)) : lhs_(lhs)
-    {
-    }
-
-    value_type getSequence() const
-    {
-        return lhs_.getSequence() << N;
-    }
-
-    operator value_type () const
-    {
-        return getSequence();
+        return super::getSequence();
     }
 
     template<int M, typename U>
@@ -602,9 +549,6 @@ public:
     {
         return ConstPack<ConstPack, void (*)(detail::Reserved<M>*)>(*this, rhs);
     }
-
-private:
-    const LHS& lhs_;
 };
 
 #define DEFINE_OP(op) \
