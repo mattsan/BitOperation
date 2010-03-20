@@ -423,6 +423,11 @@ public:
         return Bits(-super::value_);
     }
 
+    Bits operator ~ () const
+    {
+        return Bits(~super::value_);
+    }
+
     Bits& operator ++ ()
     {
         *this += 1;
@@ -474,6 +479,11 @@ public:
         return set(super::value_ / n);
     }
 
+    Bits& operator %= (value_type n)
+    {
+        return set(super::value_ % n);
+    }
+
     Bits& operator |= (value_type n)
     {
         return set(super::value_ | n);
@@ -482,6 +492,11 @@ public:
     Bits& operator &= (value_type n)
     {
         return set(super::value_ & n);
+    }
+
+    Bits& operator ^= (value_type n)
+    {
+        return set(super::value_ ^ n);
     }
 
     Bits& operator <<= (int n)
@@ -631,7 +646,7 @@ public:
     }
 };
 
-#define DEFINE_OP(op) \
+#define EMATTSAN_BITS_DEFINE_OP(op) \
 template<int N, typename T, int M, typename U> \
 inline typename detail::Result<N, M, T, U>::result_type operator op (const Bits<N, T>& lhs, const Bits<M, U>& rhs) \
 { return typename detail::Result<N, M, T, U>::result_type(lhs.get() op rhs.get()); } \
@@ -648,14 +663,16 @@ template<int N, typename T> \
 inline typename detail::Result<N, N, T, typename Bits<N, T>::unsigned_value_type>::result_type operator op (typename Bits<N, T>::unsigned_value_type lhs, const Bits<N, T>& rhs) \
 { return Bits<N, typename Bits<N, T>::unsigned_value_type>(lhs) op rhs; }
 
-DEFINE_OP(+)
-DEFINE_OP(-)
-DEFINE_OP(*)
-DEFINE_OP(/)
-DEFINE_OP(|)
-DEFINE_OP(&)
+EMATTSAN_BITS_DEFINE_OP(+)
+EMATTSAN_BITS_DEFINE_OP(-)
+EMATTSAN_BITS_DEFINE_OP(*)
+EMATTSAN_BITS_DEFINE_OP(/)
+EMATTSAN_BITS_DEFINE_OP(%)
+EMATTSAN_BITS_DEFINE_OP(|)
+EMATTSAN_BITS_DEFINE_OP(&)
+EMATTSAN_BITS_DEFINE_OP(^)
 
-#undef DEFINE_OP
+#undef EMATTSAN_BITS_DEFINE_OP
 
 template<int N, typename T, int M, typename U>
 Pack<Bits<N, T>, Bits<M, U> > operator , (Bits<N, T>& lhs, Bits<M, U>& rhs)

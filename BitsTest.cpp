@@ -1184,6 +1184,153 @@ TEST(CalcTest, DivTest6)
     ASSERT_EQ(1, static_cast<int>(_5u / u4));
 }
 
+TEST(CalcTest, ModTest1)
+{
+    Bits<6, signed> s6;
+    ASSERT_EQ(0, static_cast<int>(s6));
+    s6 = 10;
+    ASSERT_EQ(10, static_cast<int>(s6));
+    s6 %= 3;
+    ASSERT_EQ(1, static_cast<int>(s6));
+    s6 = -10;
+    ASSERT_EQ(-10, static_cast<int>(s6));
+    s6 %=3;
+    ASSERT_EQ(-1, static_cast<int>(s6));
+
+    Bits<6> u6;
+    ASSERT_EQ(0, static_cast<int>(u6));
+    u6 = 10;
+    ASSERT_EQ(10, static_cast<int>(u6));
+    u6 %= 3;
+    ASSERT_EQ(1, static_cast<int>(u6));
+    u6 = -10;
+    ASSERT_EQ(54, static_cast<int>(u6));
+    u6 %= 3;
+    ASSERT_EQ(0, static_cast<int>(u6));
+}
+
+TEST(CalcTest, ModTest2)
+{
+    Bits<6, signed> s6(13);
+    Bits<4, signed> s4(7);
+    ASSERT_EQ(6, (s6 % s4).size());
+    ASSERT_EQ(6, (s4 % s6).size());
+    ASSERT_EQ(6, static_cast<int>(s6 % s4));
+    ASSERT_EQ(7, static_cast<int>(s4 % s6));
+
+    s6 = 31;
+    ASSERT_EQ(3, static_cast<int>(s6 % s4));
+    ASSERT_EQ(7, static_cast<int>(s4 % s6));
+}
+
+TEST(CalcTest, ModTest3)
+{
+    Bits<4, signed> s4(4);
+    ASSERT_EQ(4, (s4 % 3).size());
+    ASSERT_EQ(4, (3 % s4).size());
+    ASSERT_EQ(1, static_cast<int>(s4 % 3));
+    ASSERT_EQ(3, static_cast<int>(3 % s4));
+
+    ASSERT_EQ(4, (s4 % 4).size());
+    ASSERT_EQ(4, (4 % s4).size());
+    ASSERT_EQ(0, static_cast<int>(s4 % 4));
+    ASSERT_EQ(0, static_cast<int>(4 % s4));
+
+    ASSERT_EQ(4, (s4 % 3u).size());
+    ASSERT_EQ(4, (3u % s4).size());
+    ASSERT_EQ(1, static_cast<int>(s4 % 3u));
+    ASSERT_EQ(3, static_cast<int>(3u % s4));
+
+    ASSERT_EQ(4, (s4 % 4u).size());
+    ASSERT_EQ(4, (4u % s4).size());
+    ASSERT_EQ(0, static_cast<int>(s4 % 4u));
+    ASSERT_EQ(0, static_cast<int>(4u % s4));
+}
+
+TEST(CalcTest, ModTest4)
+{
+    const Bits<4, signed> _3(3);
+    const Bits<4, signed> _4(4);
+    const Bits<4> _3u(3);
+    const Bits<4> _4u(4);
+
+    Bits<4, signed> s4(4);
+
+    ASSERT_EQ(4, (s4 % _3).size());
+    ASSERT_EQ(4, (_3 % s4).size());
+    ASSERT_EQ(1, static_cast<int>(s4 % _3));
+    ASSERT_EQ(3, static_cast<int>(_3 % s4));
+
+    ASSERT_EQ(4, (s4 % _4).size());
+    ASSERT_EQ(4, (_4 % s4).size());
+    ASSERT_EQ(0, static_cast<int>(s4 % _4));
+    ASSERT_EQ(0, static_cast<int>(_4 % s4));
+
+    ASSERT_EQ(4, (s4 % _3u).size());
+    ASSERT_EQ(4, (_3u % s4).size());
+    ASSERT_EQ(1, static_cast<int>(s4 % _3u));
+    ASSERT_EQ(3, static_cast<int>(_3u % s4));
+
+    ASSERT_EQ(4, (s4 % _4u).size());
+    ASSERT_EQ(4, (_4u % s4).size());
+    ASSERT_EQ(0, static_cast<int>(s4 % _4u));
+    ASSERT_EQ(0, static_cast<int>(_4u % s4));
+}
+
+TEST(CalcTest, ModTest5)
+{
+    Bits<4> u4(4);
+    ASSERT_EQ(4, (u4 % 3).size());
+    ASSERT_EQ(4, (3 % u4).size());
+    ASSERT_EQ(1, static_cast<int>(u4 % 3));
+    ASSERT_EQ(3, static_cast<int>(3 % u4));
+
+    ASSERT_EQ(4, (u4 % 4).size());
+    ASSERT_EQ(4, (4 % u4).size());
+    ASSERT_EQ(0, static_cast<int>(u4 % 4));
+    ASSERT_EQ(0, static_cast<int>(4 % u4));
+
+    ASSERT_EQ(4, (u4 % 3u).size());
+    ASSERT_EQ(4, (3u % u4).size());
+    ASSERT_EQ(1, static_cast<int>(u4 % 3u));
+    ASSERT_EQ(3, static_cast<int>(3u % u4));
+
+    ASSERT_EQ(4, (u4 % 4u).size());
+    ASSERT_EQ(4, (4u % u4).size());
+    ASSERT_EQ(0, static_cast<int>(u4 % 4u));
+    ASSERT_EQ(0, static_cast<int>(4u % u4));
+}
+
+TEST(CalcTest, ModTest6)
+{
+    const Bits<4, signed> _3(3);
+    const Bits<4, signed> _4(4);
+    const Bits<4> _3u(3);
+    const Bits<4> _4u(4);
+
+    Bits<4> u4(4);
+
+    ASSERT_EQ(4, (u4 % _3).size());
+    ASSERT_EQ(4, (_3 % u4).size());
+    ASSERT_EQ(1, static_cast<int>(u4 % _3));
+    ASSERT_EQ(3, static_cast<int>(_3 % u4));
+
+    ASSERT_EQ(4, (u4 % _4).size());
+    ASSERT_EQ(4, (_4 % u4).size());
+    ASSERT_EQ(0, static_cast<int>(u4 % _4));
+    ASSERT_EQ(0, static_cast<int>(_4 % u4));
+
+    ASSERT_EQ(4, (u4 % _3u).size());
+    ASSERT_EQ(4, (_3u % u4).size());
+    ASSERT_EQ(1, static_cast<int>(u4 % _3u));
+    ASSERT_EQ(3, static_cast<int>(_3u % u4));
+
+    ASSERT_EQ(4, (u4 % _4u).size());
+    ASSERT_EQ(4, (_4u % u4).size());
+    ASSERT_EQ(0, static_cast<int>(u4 % _4u));
+    ASSERT_EQ(0, static_cast<int>(_4u % u4));
+}
+
 TEST(CalcTest, OrTest1)
 {
     Bits<6, signed> s6;
@@ -1470,6 +1617,149 @@ TEST(CalcTest, AndTest6)
     ASSERT_EQ(8, static_cast<int>(_12u & u4));
 }
 
+TEST(CalcTest, XorTest1)
+{
+    Bits<6, signed> s6;
+    ASSERT_EQ(0, static_cast<int>(s6));
+    s6 ^= 8;
+    ASSERT_EQ(8, static_cast<int>(s6));
+    s6 ^= 4;
+    ASSERT_EQ(12, static_cast<int>(s6));
+    s6 ^= 12;
+    ASSERT_EQ(0, static_cast<int>(s6));
+
+    Bits<6> u6;
+    ASSERT_EQ(0, static_cast<int>(u6));
+    u6 ^= 8;
+    ASSERT_EQ(8, static_cast<int>(u6));
+    u6 ^= 4;
+    ASSERT_EQ(12, static_cast<int>(u6));
+    u6 ^= 12;
+    ASSERT_EQ(0, static_cast<int>(u6));
+}
+
+TEST(CalcTest, XorTest2)
+{
+    Bits<6, signed> s6(13);
+    Bits<4, signed> s4(7);
+    ASSERT_EQ(6, (s6 + s4).size());
+    ASSERT_EQ(6, (s4 + s6).size());
+    ASSERT_EQ(10, static_cast<int>(s6 ^ s4));
+    ASSERT_EQ(10, static_cast<int>(s4 ^ s6));
+
+    s6 = 31;
+    ASSERT_EQ(24, static_cast<int>(s6 ^ s4));
+    ASSERT_EQ(24, static_cast<int>(s4 ^ s6));
+}
+
+TEST(CalcTest, XorTest3)
+{
+    Bits<4, signed> s4(8);
+    ASSERT_EQ(4, (s4 ^ 3).size());
+    ASSERT_EQ(4, (3 ^ s4).size());
+    ASSERT_EQ(-5, static_cast<int>(s4 ^ 3));
+    ASSERT_EQ(-5, static_cast<int>(3 ^ s4));
+
+    ASSERT_EQ(4, (s4 ^ 12).size());
+    ASSERT_EQ(4, (12 ^ s4).size());
+    ASSERT_EQ(4, static_cast<int>(s4 ^ 12));
+    ASSERT_EQ(4, static_cast<int>(12 ^ s4));
+
+    ASSERT_EQ(4, (s4 ^ 3u).size());
+    ASSERT_EQ(4, (3u ^ s4).size());
+    ASSERT_EQ(11, static_cast<int>(s4 ^ 3u));
+    ASSERT_EQ(11, static_cast<int>(3u ^ s4));
+
+    ASSERT_EQ(4, (s4 ^ 12u).size());
+    ASSERT_EQ(4, (12u ^ s4).size());
+    ASSERT_EQ(4, static_cast<int>(s4 ^ 12u));
+    ASSERT_EQ(4, static_cast<int>(12u ^ s4));
+}
+
+TEST(CalcTest, XorTest4)
+{
+    const Bits<4, signed> _3(3);
+    const Bits<4, signed> _12(12);
+    const Bits<4> _3u(3);
+    const Bits<4> _12u(12);
+
+    Bits<4, signed> s4(8);
+
+    ASSERT_EQ(4, (s4 ^ _3).size());
+    ASSERT_EQ(4, (_3 ^ s4).size());
+    ASSERT_EQ(-5, static_cast<int>(s4 ^ _3));
+    ASSERT_EQ(-5, static_cast<int>(_3 ^ s4));
+
+    ASSERT_EQ(4, (s4 ^ _12).size());
+    ASSERT_EQ(4, (_12 ^ s4).size());
+    ASSERT_EQ(4, static_cast<int>(s4 ^ _12));
+    ASSERT_EQ(4, static_cast<int>(_12 ^ s4));
+
+    ASSERT_EQ(4, (s4 ^ _3u).size());
+    ASSERT_EQ(4, (_3u ^ s4).size());
+    ASSERT_EQ(11, static_cast<int>(s4 ^ _3u));
+    ASSERT_EQ(11, static_cast<int>(_3u ^ s4));
+
+    ASSERT_EQ(4, (s4 ^ _12u).size());
+    ASSERT_EQ(4, (_12u ^ s4).size());
+    ASSERT_EQ(4, static_cast<int>(s4 ^ _12u));
+    ASSERT_EQ(4, static_cast<int>(_12u ^ s4));
+}
+
+TEST(CalcTest, XorTest5)
+{
+    Bits<4> u4(8);
+    ASSERT_EQ(4, (u4 ^ 3).size());
+    ASSERT_EQ(4, (3 ^ u4).size());
+    ASSERT_EQ(11, static_cast<int>(u4 ^ 3));
+    ASSERT_EQ(11, static_cast<int>(3 ^ u4));
+
+    ASSERT_EQ(4, (u4 ^ -4).size());
+    ASSERT_EQ(4, (-4 ^ u4).size());
+    ASSERT_EQ(4, static_cast<int>(u4 ^ -4));
+    ASSERT_EQ(4, static_cast<int>(-4 ^ u4));
+
+    ASSERT_EQ(4, (u4 ^ 3u).size());
+    ASSERT_EQ(4, (3u ^ u4).size());
+    ASSERT_EQ(11, static_cast<int>(u4 ^ 3u));
+    ASSERT_EQ(11, static_cast<int>(3u ^ u4));
+
+    ASSERT_EQ(4, (u4 ^ 12u).size());
+    ASSERT_EQ(4, (12u ^ u4).size());
+    ASSERT_EQ(4, static_cast<int>(u4 ^ 12u));
+    ASSERT_EQ(4, static_cast<int>(12u ^ u4));
+}
+
+TEST(CalcTest, XorTest6)
+{
+    const Bits<4, signed> _3(3);
+    const Bits<4, signed> _12(12);
+    const Bits<4> _3u(3);
+    const Bits<4> _12u(12);
+
+    Bits<4> u4(8);
+
+    ASSERT_EQ(4, (u4 ^ _3).size());
+    ASSERT_EQ(4, (_3 ^ u4).size());
+    ASSERT_EQ(11, static_cast<int>(u4 ^ _3));
+    ASSERT_EQ(11, static_cast<int>(_3 ^ u4));
+
+    ASSERT_EQ(4, (u4 ^ _12).size());
+    ASSERT_EQ(4, (_12 ^ u4).size());
+    ASSERT_EQ(4, static_cast<int>(u4 ^ _12));
+    ASSERT_EQ(4, static_cast<int>(_12 ^ u4));
+
+    ASSERT_EQ(4, (u4 ^ _3u).size());
+    ASSERT_EQ(4, (_3u ^ u4).size());
+    ASSERT_EQ(11, static_cast<int>(u4 ^ _3u));
+    ASSERT_EQ(11, static_cast<int>(_3u ^ u4));
+
+    ASSERT_EQ(4, (u4 ^ _12u).size());
+    ASSERT_EQ(4, (_12u ^ u4).size());
+    ASSERT_EQ(4, static_cast<int>(u4 ^ _12u));
+    ASSERT_EQ(4, static_cast<int>(_12u ^ u4));
+}
+
 TEST(CalcTest, SizeTest)
 {
     Bits<4> u4;
@@ -1479,29 +1769,37 @@ TEST(CalcTest, SizeTest)
     ASSERT_EQ(4, (u4 - u4).size());
     ASSERT_EQ(4, (u4 * u4).size());
     ASSERT_EQ(4, (u4 / u4).size());
+    ASSERT_EQ(4, (u4 % u4).size());
     ASSERT_EQ(4, (u4 | u4).size());
     ASSERT_EQ(4, (u4 & u4).size());
+    ASSERT_EQ(4, (u4 ^ u4).size());
 
     ASSERT_EQ(6, (u4 + u6).size());
     ASSERT_EQ(6, (u4 - u6).size());
     ASSERT_EQ(6, (u4 * u6).size());
     ASSERT_EQ(6, (u4 / u6).size());
+    ASSERT_EQ(6, (u4 % u6).size());
     ASSERT_EQ(6, (u4 | u6).size());
     ASSERT_EQ(6, (u4 & u6).size());
+    ASSERT_EQ(6, (u4 ^ u6).size());
 
     ASSERT_EQ(6, (u6 + u4).size());
     ASSERT_EQ(6, (u6 - u4).size());
     ASSERT_EQ(6, (u6 * u4).size());
     ASSERT_EQ(6, (u6 / u4).size());
+    ASSERT_EQ(6, (u6 % u4).size());
     ASSERT_EQ(6, (u6 | u4).size());
     ASSERT_EQ(6, (u6 & u4).size());
+    ASSERT_EQ(6, (u6 ^ u4).size());
 
     ASSERT_EQ(6, (u6 + u6).size());
     ASSERT_EQ(6, (u6 - u6).size());
     ASSERT_EQ(6, (u6 * u6).size());
     ASSERT_EQ(6, (u6 / u6).size());
+    ASSERT_EQ(6, (u6 % u6).size());
     ASSERT_EQ(6, (u6 | u6).size());
     ASSERT_EQ(6, (u6 & u6).size());
+    ASSERT_EQ(6, (u6 ^ u6).size());
 
 
     Bits<4, signed> s4;
@@ -1511,87 +1809,111 @@ TEST(CalcTest, SizeTest)
     ASSERT_EQ(4, (s4 - s4).size());
     ASSERT_EQ(4, (s4 * s4).size());
     ASSERT_EQ(4, (s4 / s4).size());
+    ASSERT_EQ(4, (s4 % s4).size());
     ASSERT_EQ(4, (s4 | s4).size());
     ASSERT_EQ(4, (s4 & s4).size());
+    ASSERT_EQ(4, (s4 ^ s4).size());
 
     ASSERT_EQ(6, (s4 + s6).size());
     ASSERT_EQ(6, (s4 - s6).size());
     ASSERT_EQ(6, (s4 * s6).size());
     ASSERT_EQ(6, (s4 / s6).size());
+    ASSERT_EQ(6, (s4 % s6).size());
     ASSERT_EQ(6, (s4 | s6).size());
     ASSERT_EQ(6, (s4 & s6).size());
+    ASSERT_EQ(6, (s4 ^ s6).size());
 
     ASSERT_EQ(6, (s6 + s4).size());
     ASSERT_EQ(6, (s6 - s4).size());
     ASSERT_EQ(6, (s6 * s4).size());
     ASSERT_EQ(6, (s6 / s4).size());
+    ASSERT_EQ(6, (s6 % s4).size());
     ASSERT_EQ(6, (s6 | s4).size());
     ASSERT_EQ(6, (s6 & s4).size());
+    ASSERT_EQ(6, (s6 ^ s4).size());
 
     ASSERT_EQ(6, (s6 + s6).size());
     ASSERT_EQ(6, (s6 - s6).size());
     ASSERT_EQ(6, (s6 * s6).size());
     ASSERT_EQ(6, (s6 / s6).size());
+    ASSERT_EQ(6, (s6 % s6).size());
     ASSERT_EQ(6, (s6 | s6).size());
     ASSERT_EQ(6, (s6 & s6).size());
+    ASSERT_EQ(6, (s6 ^ s6).size());
 
 
     ASSERT_EQ(4, (u4 + s4).size());
     ASSERT_EQ(4, (u4 - s4).size());
     ASSERT_EQ(4, (u4 * s4).size());
     ASSERT_EQ(4, (u4 / s4).size());
+    ASSERT_EQ(4, (u4 % s4).size());
     ASSERT_EQ(4, (u4 | s4).size());
     ASSERT_EQ(4, (u4 & s4).size());
+    ASSERT_EQ(4, (u4 ^ s4).size());
 
     ASSERT_EQ(6, (u4 + s6).size());
     ASSERT_EQ(6, (u4 - s6).size());
     ASSERT_EQ(6, (u4 * s6).size());
     ASSERT_EQ(6, (u4 / s6).size());
+    ASSERT_EQ(6, (u4 % s6).size());
     ASSERT_EQ(6, (u4 | s6).size());
     ASSERT_EQ(6, (u4 & s6).size());
+    ASSERT_EQ(6, (u4 ^ s6).size());
 
     ASSERT_EQ(6, (u6 + s4).size());
     ASSERT_EQ(6, (u6 - s4).size());
     ASSERT_EQ(6, (u6 * s4).size());
     ASSERT_EQ(6, (u6 / s4).size());
+    ASSERT_EQ(6, (u6 % s4).size());
     ASSERT_EQ(6, (u6 | s4).size());
     ASSERT_EQ(6, (u6 & s4).size());
+    ASSERT_EQ(6, (u6 ^ s4).size());
 
     ASSERT_EQ(6, (u6 + s6).size());
     ASSERT_EQ(6, (u6 - s6).size());
     ASSERT_EQ(6, (u6 * s6).size());
     ASSERT_EQ(6, (u6 / s6).size());
+    ASSERT_EQ(6, (u6 % s6).size());
     ASSERT_EQ(6, (u6 | s6).size());
     ASSERT_EQ(6, (u6 & s6).size());
+    ASSERT_EQ(6, (u6 ^ s6).size());
 
 
     ASSERT_EQ(4, (s4 + u4).size());
     ASSERT_EQ(4, (s4 - u4).size());
     ASSERT_EQ(4, (s4 * u4).size());
     ASSERT_EQ(4, (s4 / u4).size());
+    ASSERT_EQ(4, (s4 % u4).size());
     ASSERT_EQ(4, (s4 | u4).size());
     ASSERT_EQ(4, (s4 & u4).size());
+    ASSERT_EQ(4, (s4 ^ u4).size());
 
     ASSERT_EQ(6, (s4 + u6).size());
     ASSERT_EQ(6, (s4 - u6).size());
     ASSERT_EQ(6, (s4 * u6).size());
     ASSERT_EQ(6, (s4 / u6).size());
+    ASSERT_EQ(6, (s4 % u6).size());
     ASSERT_EQ(6, (s4 | u6).size());
     ASSERT_EQ(6, (s4 & u6).size());
+    ASSERT_EQ(6, (s4 ^ u6).size());
 
     ASSERT_EQ(6, (s6 + u4).size());
     ASSERT_EQ(6, (s6 - u4).size());
     ASSERT_EQ(6, (s6 * u4).size());
     ASSERT_EQ(6, (s6 / u4).size());
+    ASSERT_EQ(6, (s6 % u4).size());
     ASSERT_EQ(6, (s6 | u4).size());
     ASSERT_EQ(6, (s6 & u4).size());
+    ASSERT_EQ(6, (s6 ^ u4).size());
 
     ASSERT_EQ(6, (s6 + u6).size());
     ASSERT_EQ(6, (s6 - u6).size());
     ASSERT_EQ(6, (s6 * u6).size());
     ASSERT_EQ(6, (s6 / u6).size());
+    ASSERT_EQ(6, (s6 % u6).size());
     ASSERT_EQ(6, (s6 | u6).size());
     ASSERT_EQ(6, (s6 & u6).size());
+    ASSERT_EQ(6, (s6 ^ u6).size());
 }
 
 TEST(ShiftTest, SignedLeftShiftTest)
@@ -1859,6 +2181,34 @@ TEST(SignTest, UnsignedTest)
     ASSERT_EQ(4, (-u4).size());
     ASSERT_EQ(8, static_cast<int>(+u4));
     ASSERT_EQ(8, static_cast<int>(-u4));
+}
+
+TEST(NotTest, SignedTest)
+{
+    Bits<4, signed> s4(7);
+
+    ASSERT_EQ(7, static_cast<int>(s4));
+    ASSERT_EQ(4, (~s4).size());
+    ASSERT_EQ(-8, static_cast<int>(~s4));
+
+    s4 = -8;
+    ASSERT_EQ(-8, static_cast<int>(s4));
+    ASSERT_EQ(4, (~s4).size());
+    ASSERT_EQ(7, static_cast<int>(~s4));
+}
+
+TEST(NotTest, UnsignedTest)
+{
+    Bits<4> u4(7);
+
+    ASSERT_EQ(7, static_cast<int>(u4));
+    ASSERT_EQ(4, (~u4).size());
+    ASSERT_EQ(8, static_cast<int>(~u4));
+
+    u4 = 8;
+    ASSERT_EQ(8, static_cast<int>(u4));
+    ASSERT_EQ(4, (~u4).size());
+    ASSERT_EQ(7, static_cast<int>(~u4));
 }
 
 TEST(IncTest, SignedTest)
