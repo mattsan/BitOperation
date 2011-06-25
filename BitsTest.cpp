@@ -1762,8 +1762,8 @@ TEST(CalcTest, XorTest6)
 
 TEST(CalcTest, SizeTest)
 {
-    Bits<4> u4;
-    Bits<6> u6;
+    Bits<4> u4(1);
+    Bits<6> u6(1);
 
     ASSERT_EQ(4, (u4 + u4).size());
     ASSERT_EQ(4, (u4 - u4).size());
@@ -1802,8 +1802,8 @@ TEST(CalcTest, SizeTest)
     ASSERT_EQ(6, (u6 ^ u6).size());
 
 
-    Bits<4, signed> s4;
-    Bits<6, signed> s6;
+    Bits<4, signed> s4(1);
+    Bits<6, signed> s6(1);
 
     ASSERT_EQ(4, (s4 + s4).size());
     ASSERT_EQ(4, (s4 - s4).size());
@@ -2305,6 +2305,26 @@ TEST(DecTest, UnsignedTest)
     ASSERT_EQ(2, u3--);
     ASSERT_EQ(1, u3--);
     ASSERT_EQ(0, u3--);
+}
+
+TEST(DefineSignTest, SignedTest)
+{
+    ASSERT_EQ(typeid(signed char),  typeid(Bits<1, Signed>::value_type));
+    ASSERT_EQ(typeid(signed char),  typeid(Bits<8, Signed>::value_type));
+    ASSERT_EQ(typeid(signed short), typeid(Bits<9, Signed>::value_type));
+    ASSERT_EQ(typeid(signed short), typeid(Bits<16, Signed>::value_type));
+    ASSERT_EQ(typeid(signed int),   typeid(Bits<17, Signed>::value_type));
+    ASSERT_EQ(typeid(signed int),   typeid(Bits<32, Signed>::value_type));
+}
+
+TEST(DefineSignTest, UnsignedTest)
+{
+    ASSERT_EQ(typeid(unsigned char),  typeid(Bits<1, Unsigned>::value_type));
+    ASSERT_EQ(typeid(unsigned char),  typeid(Bits<8, Unsigned>::value_type));
+    ASSERT_EQ(typeid(unsigned short), typeid(Bits<9, Unsigned>::value_type));
+    ASSERT_EQ(typeid(unsigned short), typeid(Bits<16, Unsigned>::value_type));
+    ASSERT_EQ(typeid(unsigned int),   typeid(Bits<17, Unsigned>::value_type));
+    ASSERT_EQ(typeid(unsigned int),   typeid(Bits<32, Unsigned>::value_type));
 }
 
 // 汚染テスト：operator , が他の型に影響を与えないこと
