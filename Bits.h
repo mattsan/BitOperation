@@ -29,6 +29,10 @@ namespace detail
 
 //----------------------------------------------------------------------
 
+template<int N> struct Reserved; // only declaration; used expressing reserved bits size
+
+//----------------------------------------------------------------------
+
 template<int SIZE>
 struct MultiByte
 {
@@ -58,147 +62,98 @@ struct MultiByte
     unsigned char value_[Length];
 };
 
-template<int N> struct Reserved; // only declaration; used expressing reserved bits size
-
 //----------------------------------------------------------------------
 
 template<typename T>
-struct Traits;
+struct TraitsPrimitive;
 
 template<>
-struct Traits<signed char>
+struct TraitsPrimitive<signed char>
 {
-    typedef signed   char       signed_value_type;
-    typedef unsigned char       unsigned_value_type;
-    typedef signed   char       value_type;
-    typedef Signed              sign_type;
-    typedef value_type          arg_type;
-    typedef const value_type    const_arg_type;
-    typedef value_type&         ref_arg_type;
-    typedef value_type          result_type;
-    typedef value_type          const_result_type;
-    typedef unsigned_value_type mask_type;
-
-    static const unsigned int Capacity = std::numeric_limits<unsigned char>::digits;
+    typedef signed   char  signed_value_type;
+    typedef unsigned char  unsigned_value_type;
+    typedef signed   char  value_type;
+    typedef Signed         sign_type;
 };
 
 template<>
-struct Traits<unsigned char>
+struct TraitsPrimitive<unsigned char>
 {
-    typedef signed   char       signed_value_type;
-    typedef unsigned char       unsigned_value_type;
-    typedef unsigned char       value_type;
-    typedef Unsigned            sign_type;
-    typedef value_type          arg_type;
-    typedef const value_type    const_arg_type;
-    typedef value_type&         ref_arg_type;
-    typedef value_type          result_type;
-    typedef value_type          const_result_type;
-    typedef unsigned_value_type mask_type;
-
-    static const unsigned int Capacity = std::numeric_limits<unsigned char>::digits;
+    typedef signed   char  signed_value_type;
+    typedef unsigned char  unsigned_value_type;
+    typedef unsigned char  value_type;
+    typedef Unsigned       sign_type;
 };
 
 template<>
-struct Traits<signed short>
+struct TraitsPrimitive<signed short>
 {
-    typedef signed   short      signed_value_type;
-    typedef unsigned short      unsigned_value_type;
-    typedef signed   short      value_type;
-    typedef Signed              sign_type;
-    typedef value_type          arg_type;
-    typedef const value_type    const_arg_type;
-    typedef value_type&         ref_arg_type;
-    typedef value_type          result_type;
-    typedef value_type          const_result_type;
-    typedef unsigned_value_type mask_type;
-
-    static const unsigned int Capacity = std::numeric_limits<unsigned short>::digits;
+    typedef signed   short signed_value_type;
+    typedef unsigned short unsigned_value_type;
+    typedef signed   short value_type;
+    typedef Signed         sign_type;
 };
 
 template<>
-struct Traits<unsigned short>
+struct TraitsPrimitive<unsigned short>
 {
-    typedef signed   short      signed_value_type;
-    typedef unsigned short      unsigned_value_type;
-    typedef unsigned short      value_type;
-    typedef Unsigned            sign_type;
-    typedef value_type          arg_type;
-    typedef const value_type    const_arg_type;
-    typedef value_type&         ref_arg_type;
-    typedef value_type          result_type;
-    typedef value_type          const_result_type;
-    typedef unsigned_value_type mask_type;
-
-    static const unsigned int Capacity = std::numeric_limits<unsigned short>::digits;
+    typedef signed   short signed_value_type;
+    typedef unsigned short unsigned_value_type;
+    typedef unsigned short value_type;
+    typedef Unsigned       sign_type;
 };
 
 template<>
-struct Traits<signed int>
+struct TraitsPrimitive<signed int>
 {
-    typedef signed   int        signed_value_type;
-    typedef unsigned int        unsigned_value_type;
-    typedef signed   int        value_type;
-    typedef Signed              sign_type;
-    typedef value_type          arg_type;
-    typedef const value_type    const_arg_type;
-    typedef value_type&         ref_arg_type;
-    typedef value_type          result_type;
-    typedef value_type          const_result_type;
-    typedef unsigned_value_type mask_type;
-
-    static const unsigned int Capacity = std::numeric_limits<unsigned int>::digits;
+    typedef signed   int   signed_value_type;
+    typedef unsigned int   unsigned_value_type;
+    typedef signed   int   value_type;
+    typedef Signed         sign_type;
 };
 
 template<>
-struct Traits<unsigned int>
+struct TraitsPrimitive<unsigned int>
 {
-    typedef signed   int        signed_value_type;
-    typedef unsigned int        unsigned_value_type;
-    typedef unsigned int        value_type;
-    typedef Unsigned            sign_type;
-    typedef value_type          arg_type;
-    typedef const value_type    const_arg_type;
-    typedef value_type&         ref_arg_type;
-    typedef value_type          result_type;
-    typedef value_type          const_result_type;
-    typedef unsigned_value_type mask_type;
-
-    static const unsigned int Capacity = std::numeric_limits<unsigned int>::digits;
+    typedef signed   int   signed_value_type;
+    typedef unsigned int   unsigned_value_type;
+    typedef unsigned int   value_type;
+    typedef Unsigned       sign_type;
 };
 
 template<>
-struct Traits<signed long>
+struct TraitsPrimitive<signed long>
 {
-    typedef signed   long       signed_value_type;
-    typedef unsigned long       unsigned_value_type;
-    typedef signed long         value_type;
-    typedef Signed              sign_type;
-    typedef value_type          arg_type;
-    typedef const value_type    const_arg_type;
-    typedef value_type&         ref_arg_type;
-    typedef value_type          result_type;
-    typedef value_type          const_result_type;
-    typedef unsigned_value_type mask_type;
-
-    static const unsigned int Capacity = std::numeric_limits<unsigned long>::digits;
+    typedef signed   long  signed_value_type;
+    typedef unsigned long  unsigned_value_type;
+    typedef signed   long  value_type;
+    typedef Signed         sign_type;
 };
 
 template<>
-struct Traits<unsigned long>
+struct TraitsPrimitive<unsigned long>
 {
-    typedef signed   long       signed_value_type;
-    typedef unsigned long       unsigned_value_type;
-    typedef unsigned long       value_type;
-    typedef Unsigned            sign_type;
-    typedef value_type          arg_type;
-    typedef const value_type    const_arg_type;
-    typedef value_type&         ref_arg_type;
-    typedef value_type          result_type;
-    typedef value_type          const_result_type;
-    typedef unsigned_value_type mask_type;
+    typedef signed   long  signed_value_type;
+    typedef unsigned long  unsigned_value_type;
+    typedef unsigned long  value_type;
+    typedef Unsigned       sign_type;
+};
 
-    static const unsigned int Capacity = std::numeric_limits<unsigned long>::digits;
+template<typename T>
+struct Traits
+{
+    typedef typename TraitsPrimitive<T>::signed_value_type   signed_value_type;
+    typedef typename TraitsPrimitive<T>::unsigned_value_type unsigned_value_type;
+    typedef typename TraitsPrimitive<T>::value_type          value_type;
+    typedef typename TraitsPrimitive<T>::sign_type           sign_type;
+    typedef value_type                                       arg_type;
+    typedef const value_type                                 const_arg_type;
+    typedef value_type&                                      ref_arg_type;
+    typedef value_type                                       result_type;
+    typedef const value_type                                 const_result_type;
+    typedef unsigned_value_type                              mask_type;
+
+    static const unsigned int Capacity = std::numeric_limits<unsigned_value_type>::digits;
 };
 
 template<int N>
