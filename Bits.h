@@ -74,7 +74,7 @@ struct Traits<signed char>
     typedef Signed              sign_type;
     typedef value_type          arg_type;
     typedef const value_type    const_arg_type;
-    typedef value_type&         ref_arg_value_type;
+    typedef value_type&         ref_arg_type;
     typedef value_type          result_type;
     typedef value_type          const_result_type;
     typedef unsigned_value_type mask_type;
@@ -91,7 +91,7 @@ struct Traits<unsigned char>
     typedef Unsigned            sign_type;
     typedef value_type          arg_type;
     typedef const value_type    const_arg_type;
-    typedef value_type&         ref_arg_value_type;
+    typedef value_type&         ref_arg_type;
     typedef value_type          result_type;
     typedef value_type          const_result_type;
     typedef unsigned_value_type mask_type;
@@ -108,7 +108,7 @@ struct Traits<signed short>
     typedef Signed              sign_type;
     typedef value_type          arg_type;
     typedef const value_type    const_arg_type;
-    typedef value_type&         ref_arg_value_type;
+    typedef value_type&         ref_arg_type;
     typedef value_type          result_type;
     typedef value_type          const_result_type;
     typedef unsigned_value_type mask_type;
@@ -125,7 +125,7 @@ struct Traits<unsigned short>
     typedef Unsigned            sign_type;
     typedef value_type          arg_type;
     typedef const value_type    const_arg_type;
-    typedef value_type&         ref_arg_value_type;
+    typedef value_type&         ref_arg_type;
     typedef value_type          result_type;
     typedef value_type          const_result_type;
     typedef unsigned_value_type mask_type;
@@ -142,7 +142,7 @@ struct Traits<signed int>
     typedef Signed              sign_type;
     typedef value_type          arg_type;
     typedef const value_type    const_arg_type;
-    typedef value_type&         ref_arg_value_type;
+    typedef value_type&         ref_arg_type;
     typedef value_type          result_type;
     typedef value_type          const_result_type;
     typedef unsigned_value_type mask_type;
@@ -159,7 +159,7 @@ struct Traits<unsigned int>
     typedef Unsigned            sign_type;
     typedef value_type          arg_type;
     typedef const value_type    const_arg_type;
-    typedef value_type&         ref_arg_value_type;
+    typedef value_type&         ref_arg_type;
     typedef value_type          result_type;
     typedef value_type          const_result_type;
     typedef unsigned_value_type mask_type;
@@ -176,7 +176,7 @@ struct Traits<signed long>
     typedef Signed              sign_type;
     typedef value_type          arg_type;
     typedef const value_type    const_arg_type;
-    typedef value_type&         ref_arg_value_type;
+    typedef value_type&         ref_arg_type;
     typedef value_type          result_type;
     typedef value_type          const_result_type;
     typedef unsigned_value_type mask_type;
@@ -193,7 +193,7 @@ struct Traits<unsigned long>
     typedef Unsigned            sign_type;
     typedef value_type          arg_type;
     typedef const value_type    const_arg_type;
-    typedef value_type&         ref_arg_value_type;
+    typedef value_type&         ref_arg_type;
     typedef value_type          result_type;
     typedef value_type          const_result_type;
     typedef unsigned_value_type mask_type;
@@ -212,7 +212,7 @@ struct Traits<MultiByte<N> >
     typedef typename multibyte::sign_type           sign_type;
     typedef typename multibyte::arg_type            arg_type;
     typedef typename multibyte::const_arg_type      const_arg_type;
-    typedef typename multibyte::ref_arg_value_type  ref_arg_value_type;
+    typedef typename multibyte::ref_arg_type        ref_arg_type;
     typedef typename multibyte::result_type         result_type;
     typedef typename multibyte::const_result_type   const_result_type;
     typedef unsigned char                           mask_type;
@@ -280,7 +280,7 @@ struct Fit
     typedef typename traits::sign_type           sign_type;
     typedef typename traits::arg_type            arg_type;
     typedef typename traits::const_arg_type      const_arg_type;
-    typedef typename traits::ref_arg_value_type  ref_arg_value_type;
+    typedef typename traits::ref_arg_type        ref_arg_type;
     typedef typename traits::result_type         result_type;
     typedef typename traits::const_result_type   const_result_type;
 };
@@ -348,7 +348,7 @@ struct Trimmer
     static const typename T::mask_type mask = Mask<typename T::mask_type, SIZE>::value;
     static const typename T::mask_type msb  = mask ^ (mask >> 1);
 
-    static void trim(typename T::ref_arg_value_type n)
+    static void trim(typename T::ref_arg_type n)
     {
         n &= mask;
         if((n & msb) != 0) // if MSB is high then ...
@@ -363,7 +363,7 @@ struct Trimmer<T, SIZE, Unsigned>
 {
     static const typename T::mask_type mask = Mask<typename T::mask_type, SIZE>::value;
 
-    static void trim(typename T::ref_arg_value_type n)
+    static void trim(typename T::ref_arg_type n)
     {
         n &= mask;
     }
@@ -376,7 +376,7 @@ struct Trimmer<Traits<MultiByte<N> >, SIZE, Unsigned>
 
     static const typename multibyte::mask_type mask = Mask<typename multibyte::mask_type, SIZE>::value;
 
-    static typename multibyte::const_result_type trim(typename multibyte::ref_arg_value_type n)
+    static typename multibyte::const_result_type trim(typename multibyte::ref_arg_type n)
     {
         n.value_[0] &= mask;
         return n;
@@ -400,16 +400,16 @@ struct Container
     typedef typename traits::sign_type           sign_type;
     typedef typename traits::arg_type            arg_type;
     typedef typename traits::const_arg_type      const_arg_type;
-    typedef typename traits::ref_arg_value_type  ref_arg_value_type;
+    typedef typename traits::ref_arg_type        ref_arg_type;
     typedef typename traits::result_type         result_type;
     typedef typename traits::const_result_type   const_result_type;
     typedef typename traits::mask_type           mask_type;
 
     static const int Capacity = traits::Capacity;
 
-    static void trim(ref_arg_value_type n)
+    static void trim(ref_arg_type n)
     {
-        return Trimmer<traits, Size, sign_type>::trim(n);
+        Trimmer<traits, Size, sign_type>::trim(n);
     }
 
     static const_result_type getSequence(const_arg_type value)
@@ -432,7 +432,7 @@ public:
     typedef typename container::sign_type           sign_type;
     typedef typename container::arg_type            arg_type;
     typedef typename container::const_arg_type      const_arg_type;
-    typedef typename container::ref_arg_value_type  ref_arg_value_type;
+    typedef typename container::ref_arg_type        ref_arg_type;
     typedef typename container::result_type         result_type;
     typedef typename container::const_result_type   const_result_type;
 
@@ -455,7 +455,7 @@ public:
         return value_;
     }
 
-    static void trim(ref_arg_value_type n)
+    static void trim(ref_arg_type n)
     {
         container::trim(n);
     }
@@ -488,7 +488,7 @@ public:
     typedef typename container::value_type         value_type;
     typedef typename container::arg_type           arg_type;
     typedef typename container::const_arg_type     const_arg_type;
-    typedef typename container::ref_arg_value_type ref_arg_value_type;
+    typedef typename container::ref_arg_type       ref_arg_type;
     typedef typename container::result_type        result_type;
     typedef typename container::const_result_type  const_result_type;
 
@@ -523,7 +523,7 @@ public:
     typedef typename container::value_type         value_type;
     typedef typename container::arg_type           arg_type;
     typedef typename container::const_arg_type     const_arg_type;
-    typedef typename container::ref_arg_value_type ref_arg_value_type;
+    typedef typename container::ref_arg_type       ref_arg_type;
     typedef typename container::result_type        result_type;
     typedef typename container::const_result_type  const_result_type;
 
@@ -556,7 +556,7 @@ public:
     typedef typename container::value_type         value_type;
     typedef typename container::arg_type           arg_type;
     typedef typename container::const_arg_type     const_arg_type;
-    typedef typename container::ref_arg_value_type ref_arg_value_type;
+    typedef typename container::ref_arg_type       ref_arg_type;
     typedef typename container::result_type        result_type;
     typedef typename container::const_result_type  const_result_type;
 
@@ -585,7 +585,7 @@ public:
     typedef typename container::value_type         value_type;
     typedef typename container::arg_type           arg_type;
     typedef typename container::const_arg_type     const_arg_type;
-    typedef typename container::ref_arg_value_type ref_arg_value_type;
+    typedef typename container::ref_arg_type       ref_arg_type;
     typedef typename container::result_type        result_type;
     typedef typename container::const_result_type  const_result_type;
 
@@ -665,7 +665,7 @@ public:
     typedef typename super::sign_type           sign_type;
     typedef typename super::arg_type            arg_type;
     typedef typename super::const_arg_type      const_arg_type;
-    typedef typename super::ref_arg_value_type  ref_arg_value_type;
+    typedef typename super::ref_arg_type        ref_arg_type;
     typedef typename super::result_type         result_type;
     typedef typename super::const_result_type   const_result_type;
 
@@ -840,7 +840,7 @@ public:
     typedef typename super::value_type         value_type;
     typedef typename super::arg_type           arg_type;
     typedef typename super::const_arg_type     const_arg_type;
-    typedef typename super::ref_arg_value_type ref_arg_value_type;
+    typedef typename super::ref_arg_type       ref_arg_type;
     typedef typename super::result_type        result_type;
     typedef typename super::const_result_type  const_result_type;
 
@@ -918,7 +918,7 @@ public:
     typedef typename super::value_type         value_type;
     typedef typename super::arg_type           arg_type;
     typedef typename super::const_arg_type     const_arg_type;
-    typedef typename super::ref_arg_value_type ref_arg_value_type;
+    typedef typename super::ref_arg_type       ref_arg_type;
     typedef typename super::result_type        result_type;
     typedef typename super::const_result_type  const_result_type;
 
