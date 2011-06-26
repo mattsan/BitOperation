@@ -2327,6 +2327,12 @@ TEST(DefineSignTest, UnsignedTest)
     ASSERT_EQ(typeid(unsigned int),   typeid(Bits<32, Unsigned>::value_type));
 }
 
+TEST(MultiByteTest, DefineTest)
+{
+    Bits<33>  u33;
+    Bits<123> u123;
+}
+
 // 汚染テスト：operator , が他の型に影響を与えないこと
 struct Foo {};
 TEST(ContaminationTest, Test1)
