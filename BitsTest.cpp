@@ -2329,8 +2329,13 @@ TEST(DefineSignTest, UnsignedTest)
 
 TEST(MultiByteTest, DefineTest)
 {
-    Bits<33>  u33;
-    Bits<123> u123;
+    Bits<33>     u33;
+    Bits<123>    u123;
+    Bits<123456> u123456;
+
+    ASSERT_EQ(5,     sizeof(u33));
+    ASSERT_EQ(16,    sizeof(u123));
+    ASSERT_EQ(15432, sizeof(u123456));
 }
 
 // 汚染テスト：operator , が他の型に影響を与えないこと
