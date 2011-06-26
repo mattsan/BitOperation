@@ -4,6 +4,7 @@
 //----------------------------------------------------------------------
 
 #include <limits>
+#include <cstring>
 
 //----------------------------------------------------------------------
 
@@ -36,6 +37,8 @@ template<int N> struct Reserved; // only declaration; used expressing reserved b
 template<int SIZE>
 struct MultiByte
 {
+    typedef unsigned char block_type;
+
     typedef MultiByte        signed_value_type;
     typedef MultiByte        unsigned_value_type;
     typedef MultiByte        value_type;
@@ -45,21 +48,48 @@ struct MultiByte
     typedef MultiByte&       ref_arg_type;
     typedef MultiByte&       result_type;
     typedef const MultiByte& const_result_type;
-    typedef unsigned char    mask_type;
+    typedef block_type       mask_type;
 
-    static const int          Size     = SIZE;
-    static const int          Length   = (Size + std::numeric_limits<unsigned char>::digits - 1) / std::numeric_limits<unsigned char>::digits;
-    static const unsigned int Capacity = Length * std::numeric_limits<unsigned char>::digits;
+    static const int          BlockSize = std::numeric_limits<block_type>::digits;
+    static const int          Size      = SIZE;
+    static const int          Length    = (Size + BlockSize - 1) / BlockSize;
+    static const unsigned int Capacity  = Length * BlockSize;
 
     MultiByte()
     {
+        std::memset(value_, 0, Length);
     }
 
-    MultiByte(int value)
+    MultiByte(const MultiByte& other)
     {
+        std::memcpy(value_, other.value_, Length);
     }
 
-    unsigned char value_[Length];
+    template<int M>
+    MultiByte(const MultiByte<M>& other)
+    {
+        if(Length < M)
+        {
+            std::memcpy(value_, (other.value_ + M - Length), Length);
+        }
+        else
+        {
+            std::memset(value_, 0, Length - M);
+            std::memcpy((value_ + Length - M), other.value_, M);
+        }
+    }
+
+    int bitAt(int pos) const
+    {
+        return ((0 <= pos) && (pos < Size)) ? (value_[Length - (pos / BlockSize) - 1] >> (pos % BlockSize)) : 0;
+    }
+
+    block_type blockAt(int pos) const
+    {
+        return ((0 <= pos) && (pos < Length)) ? value_[pos] : 0;
+    }
+
+    block_type value_[Length];
 };
 
 //----------------------------------------------------------------------
@@ -394,6 +424,10 @@ public:
     static const int Size     = SIZE;
     static const int Capacity = container::Capacity;
 
+    BitsBase() : value_()
+    {
+    }
+
     BitsBase(const_arg_type value) : value_(value)
     {
         trim(value_);
@@ -632,7 +666,7 @@ public:
         return Size;
     }
 
-    Bits() : super(0)
+    Bits() : super()
     {
     }
 
